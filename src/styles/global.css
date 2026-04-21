@@ -1580,6 +1580,36 @@ h1 {
   gap: 0.55rem;
 }
 
+@media (max-width: 1200px) {
+  .page-wrap {
+    width: min(1120px, 94vw);
+  }
+
+  .hero-variant-console {
+    grid-template-columns: 310px minmax(0, 1fr);
+  }
+
+  .console-right {
+    padding: 1.25rem 1.35rem 1.2rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wb-shell {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+
+  .wb-content {
+    padding: 1.2rem 1.5rem 1.8rem;
+  }
+}
+
 @media (max-width: 980px) {
   .wb-shell {
     grid-template-columns: 1fr;
@@ -1596,7 +1626,7 @@ h1 {
 
   .cards-grid,
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-variant-identity,
@@ -1711,6 +1741,21 @@ h1 {
     margin-bottom: 1.2rem;
   }
 
+  .links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem 0.6rem;
+  }
+
+  .links a {
+    text-align: center;
+    border: 1px solid rgba(63, 82, 113, 0.42);
+    border-radius: 10px;
+    padding: 0.32rem 0.25rem;
+    font-size: 0.88rem;
+  }
+
   .hero-variant-picker {
     width: 100%;
     display: grid;
@@ -1729,5 +1774,45 @@ h1 {
   .project-modal-card {
     width: 95vw;
     padding: 1rem;
+  }
+
+  .cards-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-content {
+    padding: 0.95rem 0.85rem 1.25rem;
+  }
+
+  .wb-copy-row {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .page-wrap {
+    width: calc(100vw - 0.7rem);
+    margin: 0.35rem;
+  }
+
+  .hero,
+  .section,
+  .footer {
+    border-radius: 14px;
+    padding: 0.82rem;
+  }
+
+  .links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ranking-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-card {
+    padding: 0.75rem;
   }
 }

@@ -187,12 +187,49 @@ const skillTags = [
 ];
 
 const heroPrimaryPhoto = '/images/joaquin-real.jpg';
-const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
+const heroNeyiPhoto = '/images/neyi21.jpg';
+const seoKeywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF, CTFtime, ciberseguridad, writeups, seguridad informatica, forense digital, blue team';
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Joaquin Castaño Trujillo',
+    alternateName: ['Neyi21', 'Joaquin Castano Trujillo'],
+    url: 'https://neyi.me',
+    image: 'https://neyi.me/images/neyi-pixel.jpg',
+    jobTitle: 'Junior Security Engineer / Security Analyst',
+    knowsAbout: [
+      'Cybersecurity',
+      'CTF',
+      'Digital Forensics',
+      'Blue Team',
+      'Incident Response',
+      'MITRE ATT&CK',
+    ],
+    sameAs: [
+      'https://github.com/Joaquin9999',
+      'https://www.linkedin.com/in/joaquin-casta%C3%B1o-trujillo-00422126a/',
+      'https://ctftime.org/team/408704',
+      'https://ch0wn3rs.ninja',
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Neyi21 Portfolio',
+    url: 'https://neyi.me',
+    inLanguage: 'es',
+  },
+];
 ---
 
 <BaseLayout
-  title="Joaquin Castano Trujillo (Neyi21) | Portfolio"
-  description="Portafolio de Joaquin Castano Trujillo (Neyi21): writeups, proyectos, mejores resultados CTF y experiencia."
+  title="Joaquin Castaño Trujillo (Neyi21) | Portfolio de Ciberseguridad"
+  description="Portafolio de Joaquin Castaño Trujillo (Neyi21): Ch0wn3rs, writeups, proyectos y mejores resultados en CTFtime."
+  keywords={seoKeywords}
+  canonical="https://neyi.me/"
+  image="/images/neyi-pixel.jpg"
+  structuredData={structuredData}
 >
   <main class="page-wrap">
     <nav class="topbar topbar-sticky">
@@ -477,8 +514,40 @@ const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
       }
     }
 
+    function renderBestResults(best) {
+      const container = document.getElementById('best-results-list');
+      if (!container || !Array.isArray(best) || best.length === 0) return;
+
+      container.innerHTML = best
+        .map(
+          (ctf) => `
+              <article class="result-card">
+                <div>
+                  <p class="result-title">${ctf.title}</p>
+                </div>
+                <div class="result-pill">#${ctf.place}</div>
+                <a href="${ctf.url}" target="_blank" rel="noreferrer">Ver evento</a>
+              </article>
+            `
+        )
+        .join('');
+    }
+
     async function refreshBestResults() {
       try {
+        const todayKey = new Date().toISOString().slice(0, 10);
+        const cacheKey = `ctf-best-results-${todayKey}`;
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            renderBestResults(parsed);
+            return;
+          } catch {
+            sessionStorage.removeItem(cacheKey);
+          }
+        }
+
         const currentYear = new Date().getUTCFullYear();
         const [team, yearResults, prevResults] = await Promise.all([
           fetchJson(`https://ctftime.org/api/v1/teams/${TEAM_ID}/`),
@@ -516,7 +585,7 @@ const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
         }
 
         candidates.sort((a, b) => a.place - b.place || b.eventId - a.eventId);
-        const topCandidateBatch = candidates.slice(0, 14);
+        const topCandidateBatch = candidates.slice(0, 8);
 
         const eventsMeta = await Promise.all(
           topCandidateBatch.map(async (entry) => {
@@ -541,23 +610,9 @@ const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
         eventsMeta.sort((a, b) => a.place - b.place || Date.parse(b.finish || 0) - Date.parse(a.finish || 0));
         const best = eventsMeta.slice(0, 8);
 
-        const container = document.getElementById('best-results-list');
-        if (!container) return;
         if (!best.length) return;
-
-        container.innerHTML = best
-          .map(
-            (ctf) => `
-              <article class="result-card">
-                <div>
-                  <p class="result-title">${ctf.title}</p>
-                </div>
-                <div class="result-pill">#${ctf.place}</div>
-                <a href="${ctf.url}" target="_blank" rel="noreferrer">Ver evento</a>
-              </article>
-            `
-          )
-          .join('');
+        renderBestResults(best);
+        sessionStorage.setItem(cacheKey, JSON.stringify(best));
       } catch {
         // keep server-rendered fallback
       }
@@ -659,7 +714,15 @@ const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
       });
     }
 
-    refreshBestResults();
+    const runWhenIdle = (callback) => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(callback, { timeout: 1500 });
+      } else {
+        setTimeout(callback, 300);
+      }
+    };
+
+    window.addEventListener('load', () => runWhenIdle(refreshBestResults), { once: true });
     setupProjectModal();
     setupSmartNavbar();
 

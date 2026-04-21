@@ -14,6 +14,9 @@ const {
   date,
   tags = [],
 } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const imageUrl = new URL('/images/neyi-pixel.jpg', Astro.site ?? Astro.url.origin).toString();
+const keywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF writeups, ciberseguridad, seguridad informatica';
 
 const writeupModules = import.meta.glob('../pages/writeups/*.md', { eager: true });
 const writeupsNav = Object.entries(writeupModules)
@@ -62,10 +65,25 @@ function resolveWriteupIcon(tag: string, title: string): string {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="Joaquin Castaño Trujillo (Neyi21)" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/jpeg" href="/images/neyi-pixel.jpg" />
     <link rel="apple-touch-icon" href="/images/neyi-pixel.jpg" />
-    <meta property="og:image" content="/images/neyi-pixel.jpg" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${title} | Neyi21`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content="Neyi21 Portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | Neyi21`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
     <title>{title} | Neyi21</title>
+    <link rel="dns-prefetch" href="//cdn.simpleicons.org" />
+    <link rel="dns-prefetch" href="//ctftime.org" />
   </head>
   <body class="wb-body">
     <div class="wb-app">

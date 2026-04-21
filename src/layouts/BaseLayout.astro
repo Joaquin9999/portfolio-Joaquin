@@ -4,12 +4,28 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  keywords?: string;
+  canonical?: string;
+  image?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title = 'Joaquin Castano Trujillo | Security Portfolio',
   description = 'Portfolio de Joaquin Castano Trujillo (Neyi21), Security Engineer y CTF player de Ch0wn3rs.',
+  keywords = 'Neyi, Neyi21, Joaquin Castano, Joaquin Castaño, Ch0wn3rs, CTF, cybersecurity, writeups, portfolio',
+  canonical,
+  image = '/images/neyi-pixel.jpg',
+  noindex = false,
+  structuredData,
 } = Astro.props;
+
+const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const canonicalUrl = canonical ?? url;
+const imageUrl = image.startsWith('http')
+  ? image
+  : new URL(image, Astro.site ?? Astro.url.origin).toString();
 ---
 
 <!doctype html>
@@ -18,16 +34,34 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="Joaquin Castaño Trujillo (Neyi21)" />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/jpeg" href="/images/neyi-pixel.jpg" />
     <link rel="apple-touch-icon" href="/images/neyi-pixel.jpg" />
-    <meta property="og:image" content="/images/neyi-pixel.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content="Neyi21 Portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
     <title>{title}</title>
+    <link rel="dns-prefetch" href="//ctftime.org" />
+    <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    )}
   </head>
   <body>
     <slot />
