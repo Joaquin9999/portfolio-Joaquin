@@ -58,14 +58,7 @@ const imageUrl = image.startsWith('http')
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <title>{title}</title>
-    <link rel="dns-prefetch" href="//ctftime.org" />
-    <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="dns-prefetch" href="//cdn.simpleicons.org" />
     {structuredData && (
       <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     )}

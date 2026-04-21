@@ -170,24 +170,25 @@ try {
 
 const skillTags = [
   { name: 'MITRE ATT&CK', icon: '' },
-  { name: 'Splunk', icon: 'https://cdn.simpleicons.org/splunk/ffffff' },
+  { name: 'Splunk', icon: '/icons/skills/splunk.svg' },
   { name: 'Sigma', icon: '' },
   { name: 'YARA', icon: '' },
   { name: 'Suricata', icon: '' },
   { name: 'Snork', icon: '' },
-  { name: 'Linux', icon: 'https://cdn.simpleicons.org/linux/ffffff' },
-  { name: 'Bash', icon: 'https://cdn.simpleicons.org/gnubash/ffffff' },
-  { name: 'Python', icon: 'https://cdn.simpleicons.org/python/ffffff' },
-  { name: 'Burp Suite', icon: 'https://cdn.simpleicons.org/burpsuite/ffffff' },
-  { name: 'Wireshark', icon: 'https://cdn.simpleicons.org/wireshark/ffffff' },
-  { name: 'Figma', icon: 'https://cdn.simpleicons.org/figma/ffffff' },
+  { name: 'Linux', icon: '/icons/skills/linux.svg' },
+  { name: 'Bash', icon: '/icons/skills/gnubash.svg' },
+  { name: 'Python', icon: '/icons/skills/python.svg' },
+  { name: 'Burp Suite', icon: '/icons/skills/burpsuite.svg' },
+  { name: 'Wireshark', icon: '/icons/skills/wireshark.svg' },
+  { name: 'Figma', icon: '/icons/skills/figma.svg' },
   { name: 'Nmap', icon: '' },
-  { name: 'Azure DevOps', icon: 'https://cdn.simpleicons.org/azuredevops/ffffff' },
+  { name: 'Azure DevOps', icon: '' },
   { name: 'Scrum', icon: '' },
 ];
 
-const heroPrimaryPhoto = '/images/joaquin-real.jpg';
-const heroNeyiPhoto = '/images/neyi21.jpg';
+const heroPrimaryPhoto = '/images/joaquin-real-360.jpg';
+const heroPrimaryPhotoLarge = '/images/joaquin-real-640.jpg';
+const heroNeyiPhoto = '/images/neyi21-360.jpg';
 const seoKeywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF, CTFtime, ciberseguridad, writeups, seguridad informatica, forense digital, blue team';
 const structuredData = [
   {
@@ -255,11 +256,25 @@ const structuredData = [
             <div class="hero-image-frame hero-image-frame-square avatar-glitch" id="hero-avatar">
               <img
                 src={heroPrimaryPhoto}
+                srcset={`${heroPrimaryPhoto} 360w, ${heroPrimaryPhotoLarge} 640w`}
+                sizes="(max-width: 768px) 68vw, 286px"
                 alt="Joaquin Castano Trujillo"
                 loading="eager"
+                decoding="async"
+                fetchpriority="high"
+                width="360"
+                height="360"
                 class="avatar-layer avatar-primary"
               />
-              <img src={heroNeyiPhoto} alt="" loading="eager" class="avatar-layer avatar-neyi" />
+              <img
+                src={heroNeyiPhoto}
+                alt=""
+                loading="eager"
+                decoding="async"
+                width="360"
+                height="360"
+                class="avatar-layer avatar-neyi"
+              />
               <span class="avatar-scan" aria-hidden="true"></span>
             </div>
             <p class="avatar-hover-hint">Pasa el mouse</p>
@@ -495,132 +510,6 @@ const structuredData = [
   </div>
 
   <script is:inline>
-    const TEAM_ID = 408704;
-    const FETCH_TIMEOUT_MS = 5000;
-    const normalizeTeamName = (name) => String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const getTeamScore = (scores, teamId, aliasesSet) => {
-      const byId = scores.find((s) => Number(s?.team_id) === teamId);
-      if (byId) return byId;
-      return scores.find((s) => aliasesSet.has(normalizeTeamName(s?.team_name)));
-    };
-
-    async function fetchJson(url, timeoutMs = FETCH_TIMEOUT_MS) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-        return response.json();
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    function renderBestResults(best) {
-      const container = document.getElementById('best-results-list');
-      if (!container || !Array.isArray(best) || best.length === 0) return;
-
-      container.innerHTML = best
-        .map(
-          (ctf) => `
-              <article class="result-card">
-                <div>
-                  <p class="result-title">${ctf.title}</p>
-                </div>
-                <div class="result-pill">#${ctf.place}</div>
-                <a href="${ctf.url}" target="_blank" rel="noreferrer">Ver evento</a>
-              </article>
-            `
-        )
-        .join('');
-    }
-
-    async function refreshBestResults() {
-      try {
-        const todayKey = new Date().toISOString().slice(0, 10);
-        const cacheKey = `ctf-best-results-${todayKey}`;
-        const cached = sessionStorage.getItem(cacheKey);
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            renderBestResults(parsed);
-            return;
-          } catch {
-            sessionStorage.removeItem(cacheKey);
-          }
-        }
-
-        const currentYear = new Date().getUTCFullYear();
-        const [team, yearResults, prevResults] = await Promise.all([
-          fetchJson(`https://ctftime.org/api/v1/teams/${TEAM_ID}/`),
-          fetchJson(`https://ctftime.org/api/v1/results/${currentYear}/`),
-          fetchJson(`https://ctftime.org/api/v1/results/${currentYear - 1}/`),
-        ]);
-
-        const yearBucket = team?.rating?.[String(currentYear)] || {};
-        const globalRankEl = document.getElementById('global-rank');
-        const countryRankEl = document.getElementById('country-rank');
-        const ratingEl = document.getElementById('rating-points');
-        if (globalRankEl && yearBucket.rating_place) globalRankEl.textContent = `#${yearBucket.rating_place}`;
-        if (countryRankEl && yearBucket.country_place) countryRankEl.textContent = `#${yearBucket.country_place}`;
-        if (ratingEl && yearBucket.rating_points) ratingEl.textContent = Number(yearBucket.rating_points).toFixed(2);
-
-        const allDatasets = [yearResults, prevResults];
-        const candidates = [];
-        const aliases = [team?.name, team?.primary_alias, ...(team?.aliases || [])]
-          .map((entry) => String(entry || '').trim())
-          .filter(Boolean);
-        const aliasesSet = new Set(aliases.map((entry) => normalizeTeamName(entry)));
-
-        for (const dataset of allDatasets) {
-          for (const [eventId, eventData] of Object.entries(dataset)) {
-            const scores = Array.isArray(eventData?.scores) ? eventData.scores : [];
-            const score = getTeamScore(scores, TEAM_ID, aliasesSet);
-            if (!score) continue;
-            candidates.push({
-              eventId: Number(eventId),
-              title: eventData.title,
-              place: Number(score.place),
-              points: score.points,
-            });
-          }
-        }
-
-        candidates.sort((a, b) => a.place - b.place || b.eventId - a.eventId);
-        const topCandidateBatch = candidates.slice(0, 8);
-
-        const eventsMeta = await Promise.all(
-          topCandidateBatch.map(async (entry) => {
-            try {
-              const meta = await fetchJson(`https://ctftime.org/api/v1/events/${entry.eventId}/`);
-              return {
-                ...entry,
-                title: meta.title || entry.title,
-                finish: meta.finish,
-                url: meta.ctftime_url || `https://ctftime.org/event/${entry.eventId}/`,
-              };
-            } catch {
-              return {
-                ...entry,
-                finish: undefined,
-                url: `https://ctftime.org/event/${entry.eventId}/`,
-              };
-            }
-          })
-        );
-
-        eventsMeta.sort((a, b) => a.place - b.place || Date.parse(b.finish || 0) - Date.parse(a.finish || 0));
-        const best = eventsMeta.slice(0, 8);
-
-        if (!best.length) return;
-        renderBestResults(best);
-        sessionStorage.setItem(cacheKey, JSON.stringify(best));
-      } catch {
-        // keep server-rendered fallback
-      }
-    }
-
     function setupProjectModal() {
       const modal = document.getElementById('project-modal');
       if (!modal) return;
@@ -631,15 +520,15 @@ const structuredData = [
       const githubEl = document.getElementById('project-modal-github');
       const demoEl = document.getElementById('project-modal-demo');
       const toolIconMap = {
-        linux: 'https://cdn.simpleicons.org/linux/ffffff',
-        python: 'https://cdn.simpleicons.org/python/ffffff',
-        bash: 'https://cdn.simpleicons.org/gnubash/ffffff',
-        wireshark: 'https://cdn.simpleicons.org/wireshark/ffffff',
-        'burp suite': 'https://cdn.simpleicons.org/burpsuite/ffffff',
+        linux: '/icons/skills/linux.svg',
+        python: '/icons/skills/python.svg',
+        bash: '/icons/skills/gnubash.svg',
+        wireshark: '/icons/skills/wireshark.svg',
+        'burp suite': '/icons/skills/burpsuite.svg',
         ctftime: 'https://cdn.simpleicons.org/ctftime/ffffff',
-        'azure devops': 'https://cdn.simpleicons.org/azuredevops/ffffff',
+        'azure devops': '',
         nmap: '',
-        splunk: 'https://cdn.simpleicons.org/splunk/ffffff',
+        splunk: '/icons/skills/splunk.svg',
         html5: 'https://cdn.simpleicons.org/html5/ffffff',
         css3: 'https://cdn.simpleicons.org/css/ffffff',
         javascript: 'https://cdn.simpleicons.org/javascript/ffffff',
@@ -717,15 +606,6 @@ const structuredData = [
       });
     }
 
-    const runWhenIdle = (callback) => {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(callback, { timeout: 1500 });
-      } else {
-        setTimeout(callback, 300);
-      }
-    };
-
-    window.addEventListener('load', () => runWhenIdle(refreshBestResults), { once: true });
     setupProjectModal();
     setupMobileNavbar();
     setupSmartNavbar();

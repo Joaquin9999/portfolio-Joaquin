@@ -19,7 +19,7 @@ body {
   margin: 0;
   padding: 0;
   color: var(--text);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
   line-height: 1.45;
   min-height: 100vh;
   background:
@@ -75,7 +75,7 @@ body {
 .brand {
   text-decoration: none;
   color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-weight: 600;
   letter-spacing: 0.02em;
   display: inline-flex;
@@ -273,7 +273,7 @@ body {
 
 .avatar-hover-hint {
   margin: 0;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 0.68rem;
   color: rgba(166, 178, 204, 0.72);
   border: 1px solid rgba(63, 83, 111, 0.45);
@@ -295,7 +295,7 @@ body {
   border-radius: 12px;
   background: #0a111d;
   padding: 0.95rem 1.1rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
 .mini-console p {
@@ -752,7 +752,7 @@ h1 {
   border: 1px solid rgba(115, 142, 184, 0.6);
   border-radius: 999px;
   padding: 0.28rem 0.62rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
 .result-card a,
@@ -841,7 +841,7 @@ h1 {
 
 .writeup-side-tag {
   color: #98d8ff;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 0.72rem;
 }
 
@@ -864,7 +864,7 @@ h1 {
 }
 
 .writeups-main-head code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   color: #9ed9ff;
 }
 
@@ -961,7 +961,7 @@ h1 {
   border-radius: 8px;
   padding: 0.12rem 0.34rem;
   font-size: 0.75rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
 .wb-shell {
@@ -1153,7 +1153,7 @@ h1 {
   border: 1px solid #3e4a66;
   background: rgba(115, 224, 255, 0.08);
   font-size: 0.82rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   color: #9ed9ff;
 }
 
