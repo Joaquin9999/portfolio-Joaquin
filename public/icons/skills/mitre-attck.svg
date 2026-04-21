@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="MITRE ATT&CK">
+  <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="#0f1a2d" stroke="#6ecfff" stroke-width="1.5"/>
+  <path d="M7 16V8h1.8l2.2 3 2.2-3H15v8h-1.8v-4.8L11 14.1l-2.2-2.9V16Z" fill="#dff6ff"/>
+</svg>

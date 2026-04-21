@@ -1,0 +1,204 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  date?: string;
+  tags?: string[];
+}
+
+const {
+  title = 'Writeup',
+  description = 'Writeup técnico',
+  date,
+  tags = [],
+} = Astro.props;
+
+const writeupModules = import.meta.glob('../pages/writeups/*.md', { eager: true });
+const writeupsNav = Object.entries(writeupModules)
+  .map(([path, module]) => {
+    const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
+    const frontmatter = (module as any).frontmatter ?? {};
+    return {
+      slug,
+      url: `/writeups/${slug}`,
+      title: frontmatter.title || slug.replaceAll('-', ' '),
+      tag: frontmatter.tag || 'Writeup',
+      date: frontmatter.date || '',
+    };
+  })
+  .sort((a, b) => {
+    if (!a.date && !b.date) return a.title.localeCompare(b.title);
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return String(b.date).localeCompare(String(a.date));
+  });
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+
+const tagIconMap: Record<string, string> = {
+  forensics: 'https://cdn.simpleicons.org/wireshark/8fdfff',
+  web: 'https://cdn.simpleicons.org/burpsuite/8fdfff',
+  blue: 'https://cdn.simpleicons.org/splunk/8fdfff',
+  network: 'https://cdn.simpleicons.org/nmap/8fdfff',
+  osint: 'https://cdn.simpleicons.org/google/8fdfff',
+  crypto: 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+  malware: 'https://cdn.simpleicons.org/virustotal/8fdfff',
+};
+
+function resolveWriteupIcon(tag: string, title: string): string {
+  const key = `${tag} ${title}`.toLowerCase();
+  for (const candidate of Object.keys(tagIconMap)) {
+    if (key.includes(candidate)) return tagIconMap[candidate];
+  }
+  return 'https://cdn.simpleicons.org/bookstack/8fdfff';
+}
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | Neyi21</title>
+  </head>
+  <body class="wb-body">
+    <div class="wb-app">
+      <header class="wb-topbar">
+        <a class="wb-brand" href="/">Neyi21</a>
+        <label class="wb-search-wrap" for="wb-search-input">
+          <span aria-hidden="true">⌕</span>
+          <input id="wb-search-input" type="search" placeholder="Search..." autocomplete="off" />
+          <kbd>⌘ K</kbd>
+        </label>
+      </header>
+
+      <div class="wb-shell">
+        <aside class="wb-sidebar">
+          <nav class="wb-nav" aria-label="Navegación de writeups">
+            <a class="wb-home-link" href="/#writeups">
+              <img src="https://cdn.simpleicons.org/homeassistant/8fdfff" alt="" aria-hidden="true" />
+              <span>Home</span>
+            </a>
+            {writeupsNav.map((item) => (
+              <a
+                class={`wb-nav-link ${currentPath === item.url ? 'is-active' : ''}`}
+                href={item.url}
+                data-writeup-link
+                data-title={item.title.toLowerCase()}
+              >
+                <img src={resolveWriteupIcon(item.tag, item.title)} alt="" aria-hidden="true" />
+                <span>{item.title}</span>
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        <main class="wb-content">
+          <div class="wb-copy-row">
+            <button type="button" data-copy-writeup>Copy</button>
+            <button type="button" data-download-writeup>Download</button>
+          </div>
+          <header class="wb-head">
+            <h1>{title}</h1>
+            <p>{description}</p>
+            {date && <p class="result-date">Fecha: {date}</p>}
+            {tags.length > 0 && (
+              <div class="skills-tag-grid">
+                {tags.map((tag) => (
+                  <span class="skill-chip">{tag}</span>
+                ))}
+              </div>
+            )}
+          </header>
+
+          <section class="wb-markdown writeup-content">
+            <slot />
+          </section>
+        </main>
+      </div>
+    </div>
+    <script is:inline>
+      (() => {
+        const searchInput = document.getElementById('wb-search-input');
+        const navLinks = Array.from(document.querySelectorAll('[data-writeup-link]'));
+        const markdownBlock = document.querySelector('.wb-markdown');
+        const copyBtn = document.querySelector('[data-copy-writeup]');
+        const downloadBtn = document.querySelector('[data-download-writeup]');
+
+        const setButtonLabel = (button, label) => {
+          if (!button) return;
+          const previous = button.textContent;
+          button.textContent = label;
+          setTimeout(() => {
+            if (button.textContent === label) button.textContent = previous || label;
+          }, 1300);
+        };
+
+        const writeupText = () => (markdownBlock?.textContent || '').trim();
+
+        if (searchInput && navLinks.length > 0) {
+          const applyFilter = () => {
+            const query = searchInput.value.trim().toLowerCase();
+            navLinks.forEach((link) => {
+              const title = link.getAttribute('data-title') || '';
+              link.style.display = !query || title.includes(query) ? '' : 'none';
+            });
+          };
+
+          searchInput.addEventListener('input', applyFilter);
+          searchInput.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter') return;
+            const firstVisible = navLinks.find((link) => link.style.display !== 'none');
+            if (!firstVisible) return;
+            event.preventDefault();
+            window.location.href = firstVisible.href;
+          });
+
+          window.addEventListener('keydown', (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+              event.preventDefault();
+              searchInput.focus();
+              searchInput.select();
+            }
+          });
+        }
+
+        if (copyBtn) {
+          copyBtn.addEventListener('click', async () => {
+            const payload = writeupText() || window.location.href;
+            try {
+              await navigator.clipboard.writeText(payload);
+              setButtonLabel(copyBtn, 'Copied');
+            } catch {
+              setButtonLabel(copyBtn, 'No copy');
+            }
+          });
+        }
+
+        if (downloadBtn) {
+          downloadBtn.addEventListener('click', () => {
+            const payload = writeupText();
+            if (!payload) {
+              setButtonLabel(downloadBtn, 'No content');
+              return;
+            }
+            const slug = window.location.pathname.split('/').filter(Boolean).pop() || 'writeup';
+            const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `${slug}.txt`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            URL.revokeObjectURL(url);
+            setButtonLabel(downloadBtn, 'Downloaded');
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

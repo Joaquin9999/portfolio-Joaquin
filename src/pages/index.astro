@@ -1,0 +1,768 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPortfolioData } from '../lib/ctftime';
+
+const writeupModules = import.meta.glob('./writeups/*.md', { eager: true });
+const localWriteups = Object.entries(writeupModules)
+  .map(([path, module]) => {
+    const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
+    const frontmatter = (module as any).frontmatter ?? {};
+
+    return {
+      title: frontmatter.title || slug.replaceAll('-', ' '),
+      description: frontmatter.description || 'Writeup tecnico.',
+      url: `/writeups/${slug}`,
+      tag: frontmatter.tag || 'Writeup',
+      date: frontmatter.date || '',
+    };
+  })
+  .sort((a, b) => {
+    if (!a.date && !b.date) return a.title.localeCompare(b.title);
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return String(b.date).localeCompare(String(a.date));
+  });
+
+const writeupsGitbooks = [...localWriteups];
+
+const proyectos = [
+  {
+    id: 'aulanexa-web-lab',
+    title: 'AulaNexa: rastros en el portal legado',
+    summary: 'Reto CTF web educativo de SQL Injection para reconstruir un incidente en un portal academico legado.',
+    description:
+      'AulaNexa es una plataforma CTF web educativa enfocada en SQL Injection, donde el participante debe resolver un incidente por fases encadenadas en un portal academico legado. El reto avanza por rutas clave (/login, /directory, /courses, /reports), cada una con evidencias y objetivos tecnicos hasta completar la cadena final. Esta pensada para practica guiada en entornos controlados. Demo publica: https://aulanexa-web.vercel.app',
+    tags: ['Python', 'Flask', 'SQLite', 'PostgreSQL', 'Supabase', 'Jinja', 'HTML5', 'CSS3'],
+    github: 'https://github.com/Joaquin9999/AulaNexa-LaboratorioDeWeb-Public',
+    demo: 'https://aulanexa-web.vercel.app',
+    status: 'Completado',
+  },
+  {
+    id: 'bluebox-platform',
+    title: 'BlueBox: laboratorio defensivo y analisis de incidentes',
+    summary: 'Plataforma tecnica para practicar forense, deteccion y respuesta en escenarios realistas de ciberseguridad.',
+    description:
+      'BlueBox es un entorno tecnico orientado a Blue Team para entrenamiento practico en investigacion y respuesta a incidentes. El proyecto organiza escenarios con telemetria, artefactos y trazas para que el participante reconstruya lineas de tiempo, identifique evidencias y documente hallazgos accionables. Incluye enfoque en metodologia defensiva, validacion de hipotesis y comunicacion tecnica de resultados, manteniendo una experiencia reproducible para practica continua.',
+    tags: ['Python', 'Linux', 'Sigma', 'YARA', 'Suricata', 'Bash'],
+    github: 'https://github.com/Joaquin9999/BlueBox',
+    status: 'Completado',
+  },
+  {
+    id: 'security-labs',
+    title: 'Security Labs & Challenge Authoring',
+    summary: 'Retos tecnicos para formacion y evaluacion de habilidades.',
+    description:
+      'Creacion de laboratorios con pasos de reproduccion, evidencia e impacto para fortalecer analisis tecnico y documentacion profesional.',
+    tags: ['Python', 'Linux', 'Burp Suite', 'Wireshark', 'Nmap'],
+    github: '#',
+    status: 'Proximamente',
+    upcoming: true,
+  },
+];
+
+const experiencias = [
+  {
+    role: 'Founder & Leader - CTF-UPB (Cybersecurity Club)',
+    when: 'Jun 2025 - Actualidad',
+    bullets: [
+      'Lidero entrenamientos, charlas y talleres de seguridad con continuidad del equipo.',
+      'Diseno y creo retos CTF para Linux, redes, web, forense y criptografia.',
+    ],
+  },
+  {
+    role: 'Founder & Captain - Ch0wn3rs (CTF Team)',
+    when: 'Jun 2025 - Actualidad',
+    bullets: [
+      'Coordino estrategia, preparacion competitiva y distribucion de categorias.',
+      'Participacion activa en CTFs internacionales con ranking top de Colombia.',
+    ],
+  },
+  {
+    role: 'Teaching Assistant - Information Security (UPB)',
+    when: 'Jun 2025 - Nov 2025',
+    bullets: [
+      'Acompanamiento en sesiones practicas de forense, web, cripto y scripting.',
+      'Guias de documentacion tecnica: reproduccion, evidencia, impacto y recomendacion.',
+    ],
+  },
+  {
+    role: 'Student Representative - Systems Engineering',
+    when: 'Nov 2025 - Actualidad',
+    bullets: [
+      'Gestion de feedback estudiantil y seguimiento de incidencias academicas.',
+      'Articulacion con coordinacion para mejoras del programa.',
+    ],
+  },
+  {
+    role: 'Student Researcher - Frontend & Scrum',
+    when: 'Jul 2024 - Feb 2026',
+    bullets: [
+      'Coordinacion de sprints en Azure DevOps y soporte a documentacion.',
+      'Seguimiento de entregables y apoyo en desarrollo Angular.',
+    ],
+  },
+];
+
+const contacts = [
+  {
+    label: 'GitHub',
+    value: '@Joaquin9999',
+    href: 'https://github.com/Joaquin9999',
+    icon: 'github',
+  },
+  {
+    label: 'LinkedIn',
+    value: 'Joaquin Castano Trujillo',
+    href: 'https://www.linkedin.com/in/joaquin-casta%C3%B1o-trujillo-00422126a/',
+    icon: 'linkedin',
+  },
+  {
+    label: 'CTFtime',
+    value: 'Team Ch0wn3rs',
+    href: 'https://ctftime.org/team/408704',
+    icon: 'ctf',
+  },
+  {
+    label: 'Email',
+    value: 'joaquincastanot@gmail.com',
+    href: 'mailto:joaquincastanot@gmail.com',
+    icon: 'mail',
+  },
+];
+
+const fallbackCompetitions = [
+  { title: 'BlueHens CTF 2026', place: 5, ctftimeUrl: 'https://ctftime.org/event/3235' },
+  { title: "Batman's Kitchen CTF 2026", place: 10, ctftimeUrl: 'https://ctftime.org/event/3098' },
+  { title: 'Nullcon Goa HackIM 2026 CTF', place: 12, ctftimeUrl: 'https://ctftime.org/event/3066' },
+  { title: 'UTCTF 2026', place: 14, ctftimeUrl: 'https://ctftime.org/event/3133' },
+  { title: 'tkbctf5', place: 17, ctftimeUrl: 'https://ctftime.org/event/3091' },
+  { title: 'KalmarCTF 2026', place: 17, ctftimeUrl: 'https://ctftime.org/event/2983' },
+  { title: 'TAMUctf 2026', place: 19, ctftimeUrl: 'https://ctftime.org/event/3095' },
+  { title: 'Undutmaning 2026', place: 21, ctftimeUrl: 'https://ctftime.org/event/2987' },
+];
+
+let team;
+let seedCompetitions;
+let neyi21;
+
+try {
+  const data = await getPortfolioData();
+  team = data.team;
+  seedCompetitions = Array.isArray(data.recentCompetitions) && data.recentCompetitions.length > 0
+    ? data.recentCompetitions
+    : fallbackCompetitions;
+  neyi21 = data.neyi21;
+} catch {
+  team = {
+    name: 'Ch0wn3rs',
+    year: 2026,
+    globalRank: 13,
+    countryRank: 1,
+    ratingPoints: 457.64,
+  };
+  seedCompetitions = fallbackCompetitions;
+  neyi21 = {
+    alias: 'Neyi21',
+    bio: 'Focused on solving forensics challenges.',
+    joinDate: 'August 2025',
+  };
+}
+
+const skillTags = [
+  { name: 'MITRE ATT&CK', icon: '' },
+  { name: 'Splunk', icon: 'https://cdn.simpleicons.org/splunk/ffffff' },
+  { name: 'Sigma', icon: '' },
+  { name: 'YARA', icon: '' },
+  { name: 'Suricata', icon: '' },
+  { name: 'Snork', icon: '' },
+  { name: 'Linux', icon: 'https://cdn.simpleicons.org/linux/ffffff' },
+  { name: 'Bash', icon: 'https://cdn.simpleicons.org/gnubash/ffffff' },
+  { name: 'Python', icon: 'https://cdn.simpleicons.org/python/ffffff' },
+  { name: 'Burp Suite', icon: 'https://cdn.simpleicons.org/burpsuite/ffffff' },
+  { name: 'Wireshark', icon: 'https://cdn.simpleicons.org/wireshark/ffffff' },
+  { name: 'Figma', icon: 'https://cdn.simpleicons.org/figma/ffffff' },
+  { name: 'Nmap', icon: '' },
+  { name: 'Azure DevOps', icon: 'https://cdn.simpleicons.org/azuredevops/ffffff' },
+  { name: 'Scrum', icon: '' },
+];
+
+const heroPrimaryPhoto = '/images/joaquin-real.jpg';
+const heroNeyiPhoto = 'https://ch0wn3rs.ninja/neyi21.jpeg';
+---
+
+<BaseLayout
+  title="Joaquin Castano Trujillo (Neyi21) | Portfolio"
+  description="Portafolio de Joaquin Castano Trujillo (Neyi21): writeups, proyectos, mejores resultados CTF y experiencia."
+>
+  <main class="page-wrap">
+    <nav class="topbar topbar-sticky">
+      <a href="#top" class="brand">
+        <span>Neyi21</span>
+      </a>
+      <div class="links">
+        <a href="#ranking">CTFs</a>
+        <a href="#writeups">Writeups</a>
+        <a href="#proyectos">Proyectos</a>
+        <a href="#experiencia">Experiencia</a>
+        <a href="#contacto">Contacto</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="hero-variants">
+        <article class="hero-variant hero-variant-console is-active">
+          <div class="console-left">
+            <div class="hero-image-frame hero-image-frame-square avatar-glitch" id="hero-avatar">
+              <img
+                src={heroPrimaryPhoto}
+                alt="Joaquin Castano Trujillo"
+                loading="eager"
+                class="avatar-layer avatar-primary"
+              />
+              <img src={heroNeyiPhoto} alt="" loading="eager" class="avatar-layer avatar-neyi" />
+              <span class="avatar-scan" aria-hidden="true"></span>
+            </div>
+            <p class="avatar-hover-hint">Pasa el mouse</p>
+          </div>
+          <div class="console-right">
+            <h1 class="hero-name-inline hero-name-glitch">
+              <span class="name-main name-joaquin">Joaquin Castaño Trujillo</span>
+              <span class="name-main name-neyi">Neyi21</span>
+            </h1>
+            <h2 class="hero-title-secondary">Junior Security Engineer / Security Analyst</h2>
+            <div class="mini-console">
+              <p><span>focus</span> forensics + incident analysis + CTF + SOC + Blue Team</p>
+              <p class="team-line">
+                <span>team</span>
+                <span class="team-value">
+                  <a class="team-link" href="https://ch0wn3rs.ninja" target="_blank" rel="noreferrer">Ch0wn3rs</a>
+                </span>
+              </p>
+              <p><span>location</span> Medellin, Colombia</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </header>
+
+    <section class="section" id="ranking">
+      <div class="section-head ranking-head">
+        <h2>Mejores resultados en CTFs</h2>
+        <span class="ranking-chip">CTFtime Live</span>
+      </div>
+
+      <div class="stats-grid" id="team-stats" data-team-id="408704">
+        <article class="stat-card">
+          <p>Ranking Colombia ({team.year})</p>
+          <h3 id="country-rank">#{team.countryRank}</h3>
+        </article>
+        <article class="stat-card">
+          <p>Ranking Global ({team.year})</p>
+          <h3 id="global-rank">#{team.globalRank}</h3>
+        </article>
+        <article class="stat-card">
+          <p>Rating Points</p>
+          <h3 id="rating-points">{team.ratingPoints.toFixed(2)}</h3>
+        </article>
+      </div>
+
+      <div class="results" id="best-results-list">
+        {seedCompetitions.length > 0 ? (
+          seedCompetitions.map((ctf) => (
+            <article class="result-card">
+              <div>
+                <p class="result-title">{ctf.title}</p>
+              </div>
+              <div class="result-pill">#{ctf.place}</div>
+              <a href={ctf.ctftimeUrl} target="_blank" rel="noreferrer">Ver evento</a>
+            </article>
+          ))
+        ) : (
+          <article class="result-card">
+            <div>
+              <p class="result-title">Cargando mejores resultados desde CTFtime API...</p>
+              <p class="result-date">Si no cargan, revisa tu conexion y recarga.</p>
+            </div>
+          </article>
+        )}
+      </div>
+    </section>
+
+    <section class="section writeups-shell" id="writeups">
+      <div class="section-head">
+        <h2>Writeups</h2>
+      </div>
+      <div class="writeups-krauq-grid">
+        {writeupsGitbooks.map((item, idx) => (
+          <a
+            class="writeup-entry"
+            href={item.url}
+            target={item.url.startsWith('http') ? '_blank' : undefined}
+            rel="noreferrer"
+          >
+            <span class="writeup-index">{String(idx + 1).padStart(2, '0')}</span>
+            <div>
+              <p class="writeup-tag">{item.tag}</p>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </div>
+            <span class="writeup-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="section" id="proyectos">
+      <div class="section-head">
+        <h2>Proyectos</h2>
+      </div>
+      <div class="cards-grid projects-grid">
+        {proyectos.map((project, idx) => (
+          <article class={`info-card project-card ${project.upcoming ? 'is-upcoming' : ''}`}>
+            <div class="project-status-row">
+              <p class="project-kicker">Proyecto {String(idx + 1).padStart(2, '0')}</p>
+              <span class={`project-state ${project.status.toLowerCase().includes('completado') ? 'is-completed' : ''}`}>{project.status}</span>
+            </div>
+            <h3>{project.title}</h3>
+            <p>{project.summary}</p>
+            <div class="project-actions">
+              {project.upcoming ? (
+                <>
+                  <span class="btn-mini is-disabled" aria-disabled="true">GitHub</span>
+                  <span class="btn-mini btn-mini-alt is-disabled" aria-disabled="true">Ver ficha</span>
+                </>
+              ) : (
+                <>
+                  <a class="btn-mini" href={project.github} target="_blank" rel="noreferrer">GitHub</a>
+                  <button
+                    class="btn-mini btn-mini-alt"
+                    data-project-open
+                    data-project-title={project.title}
+                    data-project-description={project.description}
+                    data-project-tags={project.tags.join('|')}
+                    data-project-github={project.github}
+                    data-project-demo={project.demo ?? ''}
+                  >
+                    Ver ficha
+                  </button>
+                </>
+              )}
+            </div>
+            {project.upcoming && <div class="project-soon-overlay">Proximamente</div>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="section" id="experiencia">
+      <div class="section-head">
+        <h2>Experiencia</h2>
+      </div>
+      <div class="timeline full-exp">
+        {experiencias.map((item) => (
+          <article>
+            <h3>{item.role}</h3>
+            <p>{item.when}</p>
+            <ul>
+              {item.bullets.map((b) => (
+                <li>{b}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <div class="skills-tag-grid">
+        {skillTags.map((skill) => (
+          <span class="skill-chip">
+            {skill.icon ? (
+              <>
+                <img
+                  src={skill.icon}
+                  alt={`${skill.name} icon`}
+                  loading="lazy"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
+                />
+                <span class="skill-dot skill-dot-fallback" aria-hidden="true"></span>
+              </>
+            ) : (
+              <span class="skill-dot" aria-hidden="true"></span>
+            )}
+            {skill.name}
+          </span>
+        ))}
+      </div>
+    </section>
+
+    <footer class="footer" id="contacto">
+      <h2>Contacto</h2>
+      <div class="contact-grid">
+        {contacts.map((c) => (
+          <a class="contact-card" href={c.href} target={c.href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer">
+            <span class={`contact-icon contact-${c.icon}`}>
+              {c.icon === 'github' && (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1 .8 2.1v3.1c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
+                  />
+                </svg>
+              )}
+              {c.icon === 'linkedin' && (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6A2.5 2.5 0 0 1 0 3.5 2.5 2.5 0 0 1 2.5 1 2.5 2.5 0 0 1 4.98 3.5ZM.4 8h4.2v15.6H.4V8Zm7.2 0h4v2.1h.1c.6-1.1 2-2.3 4.1-2.3 4.4 0 5.2 2.9 5.2 6.6v9.2h-4.2v-8.2c0-2-.1-4.5-2.7-4.5-2.7 0-3.1 2.1-3.1 4.3v8.4H7.6V8Z"
+                  />
+                </svg>
+              )}
+              {c.icon === 'ctf' && (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="currentColor" d="M4 2h2v20H4V2Zm4 2h11l-2.5 3L19 10H8V4Z" />
+                </svg>
+              )}
+              {c.icon === 'mail' && (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm0 2v.5l9 5.4 9-5.4V7H3Zm18 10V9.8l-8.5 5.1a1 1 0 0 1-1 0L3 9.8V17h18Z"
+                  />
+                </svg>
+              )}
+            </span>
+            <div>
+              <p>{c.label}</p>
+              <span>{c.value}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </footer>
+  </main>
+
+  <div class="project-modal" id="project-modal" hidden>
+    <button class="project-modal-backdrop" aria-label="Cerrar popup" data-project-close></button>
+    <article class="project-modal-card" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+      <button class="project-modal-close" aria-label="Cerrar popup" data-project-close>✕</button>
+      <p class="writeup-tag">Ficha de proyecto</p>
+      <h3 id="project-modal-title"></h3>
+      <p id="project-modal-description"></p>
+      <div class="tag-row" id="project-modal-tags"></div>
+      <div class="modal-action-row">
+        <a class="btn-mini" id="project-modal-github" href="#" target="_blank" rel="noreferrer">Ir a GitHub</a>
+        <a class="btn-mini btn-mini-alt" id="project-modal-demo" href="#" target="_blank" rel="noreferrer" hidden>Ver demo</a>
+      </div>
+    </article>
+  </div>
+
+  <script is:inline>
+    const TEAM_ID = 408704;
+    const FETCH_TIMEOUT_MS = 5000;
+    const normalizeTeamName = (name) => String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const getTeamScore = (scores, teamId, aliasesSet) => {
+      const byId = scores.find((s) => Number(s?.team_id) === teamId);
+      if (byId) return byId;
+      return scores.find((s) => aliasesSet.has(normalizeTeamName(s?.team_name)));
+    };
+
+    async function fetchJson(url, timeoutMs = FETCH_TIMEOUT_MS) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return response.json();
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    async function refreshBestResults() {
+      try {
+        const currentYear = new Date().getUTCFullYear();
+        const [team, yearResults, prevResults] = await Promise.all([
+          fetchJson(`https://ctftime.org/api/v1/teams/${TEAM_ID}/`),
+          fetchJson(`https://ctftime.org/api/v1/results/${currentYear}/`),
+          fetchJson(`https://ctftime.org/api/v1/results/${currentYear - 1}/`),
+        ]);
+
+        const yearBucket = team?.rating?.[String(currentYear)] || {};
+        const globalRankEl = document.getElementById('global-rank');
+        const countryRankEl = document.getElementById('country-rank');
+        const ratingEl = document.getElementById('rating-points');
+        if (globalRankEl && yearBucket.rating_place) globalRankEl.textContent = `#${yearBucket.rating_place}`;
+        if (countryRankEl && yearBucket.country_place) countryRankEl.textContent = `#${yearBucket.country_place}`;
+        if (ratingEl && yearBucket.rating_points) ratingEl.textContent = Number(yearBucket.rating_points).toFixed(2);
+
+        const allDatasets = [yearResults, prevResults];
+        const candidates = [];
+        const aliases = [team?.name, team?.primary_alias, ...(team?.aliases || [])]
+          .map((entry) => String(entry || '').trim())
+          .filter(Boolean);
+        const aliasesSet = new Set(aliases.map((entry) => normalizeTeamName(entry)));
+
+        for (const dataset of allDatasets) {
+          for (const [eventId, eventData] of Object.entries(dataset)) {
+            const scores = Array.isArray(eventData?.scores) ? eventData.scores : [];
+            const score = getTeamScore(scores, TEAM_ID, aliasesSet);
+            if (!score) continue;
+            candidates.push({
+              eventId: Number(eventId),
+              title: eventData.title,
+              place: Number(score.place),
+              points: score.points,
+            });
+          }
+        }
+
+        candidates.sort((a, b) => a.place - b.place || b.eventId - a.eventId);
+        const topCandidateBatch = candidates.slice(0, 14);
+
+        const eventsMeta = await Promise.all(
+          topCandidateBatch.map(async (entry) => {
+            try {
+              const meta = await fetchJson(`https://ctftime.org/api/v1/events/${entry.eventId}/`);
+              return {
+                ...entry,
+                title: meta.title || entry.title,
+                finish: meta.finish,
+                url: meta.ctftime_url || `https://ctftime.org/event/${entry.eventId}/`,
+              };
+            } catch {
+              return {
+                ...entry,
+                finish: undefined,
+                url: `https://ctftime.org/event/${entry.eventId}/`,
+              };
+            }
+          })
+        );
+
+        eventsMeta.sort((a, b) => a.place - b.place || Date.parse(b.finish || 0) - Date.parse(a.finish || 0));
+        const best = eventsMeta.slice(0, 8);
+
+        const container = document.getElementById('best-results-list');
+        if (!container) return;
+        if (!best.length) return;
+
+        container.innerHTML = best
+          .map(
+            (ctf) => `
+              <article class="result-card">
+                <div>
+                  <p class="result-title">${ctf.title}</p>
+                </div>
+                <div class="result-pill">#${ctf.place}</div>
+                <a href="${ctf.url}" target="_blank" rel="noreferrer">Ver evento</a>
+              </article>
+            `
+          )
+          .join('');
+      } catch {
+        // keep server-rendered fallback
+      }
+    }
+
+    function setupProjectModal() {
+      const modal = document.getElementById('project-modal');
+      if (!modal) return;
+
+      const titleEl = document.getElementById('project-modal-title');
+      const descriptionEl = document.getElementById('project-modal-description');
+      const tagsEl = document.getElementById('project-modal-tags');
+      const githubEl = document.getElementById('project-modal-github');
+      const demoEl = document.getElementById('project-modal-demo');
+      const toolIconMap = {
+        linux: 'https://cdn.simpleicons.org/linux/ffffff',
+        python: 'https://cdn.simpleicons.org/python/ffffff',
+        bash: 'https://cdn.simpleicons.org/gnubash/ffffff',
+        wireshark: 'https://cdn.simpleicons.org/wireshark/ffffff',
+        'burp suite': 'https://cdn.simpleicons.org/burpsuite/ffffff',
+        ctftime: 'https://cdn.simpleicons.org/ctftime/ffffff',
+        'azure devops': 'https://cdn.simpleicons.org/azuredevops/ffffff',
+        nmap: '',
+        splunk: 'https://cdn.simpleicons.org/splunk/ffffff',
+        html5: 'https://cdn.simpleicons.org/html5/ffffff',
+        css3: 'https://cdn.simpleicons.org/css/ffffff',
+        javascript: 'https://cdn.simpleicons.org/javascript/ffffff',
+        github: 'https://cdn.simpleicons.org/github/ffffff',
+        flask: 'https://cdn.simpleicons.org/flask/ffffff',
+        sqlite: 'https://cdn.simpleicons.org/sqlite/ffffff',
+        postgresql: 'https://cdn.simpleicons.org/postgresql/ffffff',
+        supabase: 'https://cdn.simpleicons.org/supabase/ffffff',
+        jinja: '',
+      };
+
+      const closeModal = () => modal.setAttribute('hidden', '');
+
+      const escapeHtml = (input) =>
+        input
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+
+      const linkifyUrls = (input) =>
+        escapeHtml(input).replace(
+          /(https?:\/\/[^\s]+)/g,
+          '<a href="$1" target="_blank" rel="noreferrer">$1</a>'
+        );
+
+      document.querySelectorAll('[data-project-open]').forEach((openBtn) => {
+        openBtn.addEventListener('click', () => {
+          const title = openBtn.getAttribute('data-project-title') || 'Proyecto';
+          const description = openBtn.getAttribute('data-project-description') || '';
+          const tags = (openBtn.getAttribute('data-project-tags') || '')
+            .split('|')
+            .filter(Boolean);
+          const github = openBtn.getAttribute('data-project-github') || '#';
+          const demo = openBtn.getAttribute('data-project-demo') || '';
+
+          if (titleEl) titleEl.textContent = title;
+          if (descriptionEl) descriptionEl.innerHTML = linkifyUrls(description);
+          if (githubEl) githubEl.setAttribute('href', github);
+          if (demoEl) {
+            if (demo) {
+              demoEl.setAttribute('href', demo);
+              demoEl.removeAttribute('hidden');
+            } else {
+              demoEl.setAttribute('hidden', '');
+            }
+          }
+          if (tagsEl) {
+            tagsEl.innerHTML = tags
+              .map((tag) => {
+                const icon = toolIconMap[tag.toLowerCase()] || '';
+                return `
+                  <span class="tool-tag">
+                    ${icon ? `<img src="${icon}" alt="" loading="lazy" />` : '<span class="tool-dot" aria-hidden="true"></span>'}
+                    ${tag}
+                  </span>
+                `;
+              })
+              .join('');
+          }
+
+          modal.removeAttribute('hidden');
+        });
+      });
+
+      document.querySelectorAll('[data-project-close]').forEach((closeBtn) => {
+        closeBtn.addEventListener('click', closeModal);
+      });
+
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.hasAttribute('hidden')) {
+          closeModal();
+        }
+      });
+    }
+
+    refreshBestResults();
+    setupProjectModal();
+    setupSmartNavbar();
+
+    function setupSmartNavbar() {
+      const nav = document.querySelector('.topbar-sticky');
+      if (!nav) return;
+
+      let hideTimer;
+      let lastY = window.scrollY;
+
+      const showNav = () => nav.classList.remove('nav-hidden');
+      const scheduleHide = (delay = 850) => {
+        clearTimeout(hideTimer);
+        if (window.scrollY < 120) {
+          nav.classList.remove('nav-hidden');
+          return;
+        }
+        hideTimer = window.setTimeout(() => {
+          nav.classList.add('nav-hidden');
+        }, delay);
+      };
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          const y = window.scrollY;
+          if (Math.abs(y - lastY) < 2) return;
+          showNav();
+          scheduleHide(700);
+          lastY = y;
+        },
+        { passive: true }
+      );
+
+      nav.querySelectorAll('a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', () => {
+          showNav();
+          scheduleHide(1300);
+        });
+      });
+
+      scheduleHide(1300);
+    }
+
+    function setupHeroAvatar() {
+      const wrapper = document.getElementById('hero-avatar');
+      const heroPanel = wrapper?.closest('.hero-variant-console');
+      const avatarCol = wrapper?.closest('.console-left');
+      const primary = wrapper?.querySelector('.avatar-primary');
+      if (!wrapper || !primary) return;
+
+      let hoverLocked = false;
+      let switchTimeout;
+      let settleTimeout;
+
+      const setState = (className, on) => {
+        wrapper.classList.toggle(className, on);
+        heroPanel?.classList.toggle(className, on);
+        avatarCol?.classList.toggle(className, on);
+      };
+
+      const clearTimers = () => {
+        if (switchTimeout) clearTimeout(switchTimeout);
+        if (settleTimeout) clearTimeout(settleTimeout);
+        switchTimeout = undefined;
+        settleTimeout = undefined;
+      };
+
+      primary.addEventListener('error', () => {
+        setState('primary-missing', true);
+        clearTimers();
+      });
+
+      const scheduleNextGlitch = (delay = 1000) => {
+        if (wrapper.classList.contains('primary-missing') || hoverLocked) return;
+        clearTimeout(switchTimeout);
+        switchTimeout = window.setTimeout(() => {
+          setState('is-switching', true);
+          settleTimeout = window.setTimeout(() => {
+            setState('is-switching', false);
+            const next = 2200 + Math.floor(Math.random() * 1400);
+            scheduleNextGlitch(next);
+          }, 720);
+        }, delay);
+      };
+
+      wrapper.addEventListener('mouseenter', () => {
+        hoverLocked = true;
+        setState('is-switching', false);
+        setState('is-hovered', true);
+        clearTimers();
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        hoverLocked = false;
+        setState('is-hovered', false);
+        scheduleNextGlitch(350);
+      });
+
+      scheduleNextGlitch(900);
+    }
+
+    setupHeroAvatar();
+
+  </script>
+</BaseLayout>
