@@ -1,0 +1,7 @@
+name = "portfolio-joaquin"
+main = "worker/index.js"
+compatibility_date = "2026-04-21"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
