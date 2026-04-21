@@ -37,9 +37,14 @@ const imageUrl = image.startsWith('http')
     <meta name="keywords" content={keywords} />
     <meta name="author" content="Joaquin Castaño Trujillo (Neyi21)" />
     <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <meta name="googlebot" content={noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
+    <meta name="theme-color" content="#0a0f1a" />
+    <meta property="og:locale" content="es_CO" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/jpeg" href="/images/neyi-pixel.jpg" />
-    <link rel="apple-touch-icon" href="/images/neyi-pixel.jpg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -47,6 +52,7 @@ const imageUrl = image.startsWith('http')
     <meta property="og:image" content={imageUrl} />
     <meta property="og:site_name" content="Neyi21 Portfolio" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Neyi21" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />

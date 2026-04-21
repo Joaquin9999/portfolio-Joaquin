@@ -17,6 +17,25 @@ const {
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
 const imageUrl = new URL('/images/neyi-pixel.jpg', Astro.site ?? Astro.url.origin).toString();
 const keywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF writeups, ciberseguridad, seguridad informatica';
+const articleStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `${title} | Neyi21`,
+  description,
+  author: {
+    '@type': 'Person',
+    name: 'Joaquin Castaño Trujillo',
+    alternateName: 'Neyi21',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Neyi21 Portfolio',
+  },
+  mainEntityOfPage: canonicalUrl,
+  image: imageUrl,
+  datePublished: date || undefined,
+  keywords: tags.join(', '),
+};
 
 const writeupModules = import.meta.glob('../pages/writeups/*.md', { eager: true });
 const writeupsNav = Object.entries(writeupModules)
@@ -68,9 +87,14 @@ function resolveWriteupIcon(tag: string, title: string): string {
     <meta name="keywords" content={keywords} />
     <meta name="author" content="Joaquin Castaño Trujillo (Neyi21)" />
     <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="theme-color" content="#0a0f1a" />
+    <meta property="og:locale" content="es_CO" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/jpeg" href="/images/neyi-pixel.jpg" />
-    <link rel="apple-touch-icon" href="/images/neyi-pixel.jpg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content={`${title} | Neyi21`} />
     <meta property="og:description" content={description} />
@@ -78,12 +102,14 @@ function resolveWriteupIcon(tag: string, title: string): string {
     <meta property="og:image" content={imageUrl} />
     <meta property="og:site_name" content="Neyi21 Portfolio" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Neyi21" />
     <meta name="twitter:title" content={`${title} | Neyi21`} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
     <title>{title} | Neyi21</title>
     <link rel="dns-prefetch" href="//cdn.simpleicons.org" />
     <link rel="dns-prefetch" href="//ctftime.org" />
+    <script type="application/ld+json" set:html={JSON.stringify(articleStructuredData)} />
   </head>
   <body class="wb-body">
     <div class="wb-app">

@@ -89,6 +89,18 @@ body {
   gap: 1.15rem;
 }
 
+.mobile-nav-toggle {
+  display: none;
+  border: 1px solid #3f4f6f;
+  border-radius: 10px;
+  background: rgba(15, 21, 34, 0.88);
+  color: #d7e6ff;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .links a {
   text-decoration: none;
   color: var(--text);
@@ -1736,24 +1748,44 @@ h1 {
   }
 
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .links {
-    width: 100%;
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.45rem);
+    z-index: 36;
+    background: rgba(9, 13, 22, 0.98);
+    border: 1px solid #32425f;
+    border-radius: 12px;
+    padding: 0.55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .topbar.is-open .links {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.5rem 0.6rem;
   }
 
   .links a {
     text-align: center;
-    border: 1px solid rgba(63, 82, 113, 0.42);
+    border: 1px solid rgba(63, 82, 113, 0.45);
     border-radius: 10px;
-    padding: 0.32rem 0.25rem;
-    font-size: 0.88rem;
+    padding: 0.4rem 0.25rem;
+    font-size: 0.86rem;
   }
 
   .hero-variant-picker {
