@@ -1,0 +1,416 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Writeup', description = '' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { label: 'Duke\'s DBAR', href: '/writeups/dukes-dbar', icon: '🧪' },
+  { label: 'CTF-UPB Notes', href: 'https://ctf-upb.gitbook.io/ctf-upb/', icon: '📘' },
+  { label: 'Ch0wn3rs Team', href: 'https://ch0wn3rs.gitbook.io/writeups/', icon: '🛡' },
+  { label: 'CTFtime Team', href: 'https://ctftime.org/team/408704', icon: '🏆' },
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <style is:global>
+      :root {
+        --wu-bg: #0a0f1a;
+        --wu-panel: #0f1524;
+        --wu-panel-soft: #131b2d;
+        --wu-line: #2f3a55;
+        --wu-text: #eaf1ff;
+        --wu-muted: #a6b3d0;
+        --wu-link: #5ad0ff;
+        --wu-accent: #7cdfff;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: Nunito, system-ui, sans-serif;
+        background:
+          radial-gradient(circle at 8% 3%, rgba(90, 208, 255, 0.15), transparent 22%),
+          radial-gradient(circle at 93% 4%, rgba(255, 209, 102, 0.08), transparent 20%),
+          var(--wu-bg);
+        color: var(--wu-text);
+      }
+
+      .wb-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+      }
+
+      .wb-sidebar {
+        border-right: 1px solid var(--wu-line);
+        background: rgba(11, 16, 28, 0.94);
+        padding: 1.1rem 0.95rem 0.95rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .wb-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--wu-text);
+        text-decoration: none;
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+      }
+
+      .wb-logo img {
+        width: 1.55rem;
+        height: 1.55rem;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #465575;
+      }
+
+      .wb-divider {
+        height: 1px;
+        background: var(--wu-line);
+        margin-bottom: 0.95rem;
+      }
+
+      .wb-nav {
+        display: grid;
+        gap: 0.18rem;
+      }
+
+      .wb-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.52rem;
+        text-decoration: none;
+        color: var(--wu-muted);
+        border-radius: 10px;
+        padding: 0.44rem 0.5rem;
+        font-size: 0.99rem;
+      }
+
+      .wb-nav a.active {
+        color: var(--wu-accent);
+        background: rgba(90, 208, 255, 0.09);
+      }
+
+      .wb-nav a:hover {
+        color: var(--wu-text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .wb-powered {
+        display: none;
+      }
+
+      .wb-main {
+        min-width: 0;
+      }
+
+      .wb-topbar {
+        height: 74px;
+        border-bottom: 1px solid var(--wu-line);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 1rem;
+        background: rgba(15, 21, 37, 0.9);
+      }
+
+      .wb-kbd {
+        border: 1px solid #4a587a;
+        border-radius: 6px;
+        padding: 0.1rem 0.34rem;
+        font-size: 0.74rem;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .wb-content-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 1.6rem 1.25rem 2.6rem;
+      }
+
+      .wb-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.8rem;
+        margin-bottom: 0.55rem;
+      }
+
+      .wb-copy-wrap {
+        position: relative;
+      }
+
+      .wb-split {
+        display: inline-grid;
+        grid-template-columns: 52px auto;
+        border: 1px solid var(--wu-line);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--wu-panel-soft);
+      }
+
+      .wb-download,
+      .wb-copy {
+        color: var(--wu-muted);
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.98rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+      }
+
+      .wb-download {
+        border-right: 1px solid #3f4f70;
+      }
+
+      .wb-download svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .wb-copy {
+        padding: 0 1rem;
+      }
+
+      .wb-download:hover,
+      .wb-copy:hover {
+        color: var(--wu-text);
+        background: #1a2336;
+      }
+
+      .wb-copy-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 0.45rem);
+        min-width: 280px;
+        background: #171d2b;
+        border: 1px solid #3b4763;
+        border-radius: 12px;
+        padding: 0.45rem;
+        display: grid;
+        gap: 0.22rem;
+        z-index: 20;
+      }
+
+      .wb-copy-menu[hidden] {
+        display: none;
+      }
+
+      .wb-copy-item {
+        display: grid;
+        gap: 0.16rem;
+        text-decoration: none;
+        color: var(--wu-text);
+        border-radius: 10px;
+        padding: 0.55rem 0.6rem;
+        border: 1px solid transparent;
+        background: transparent;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .wb-copy-item:hover {
+        border-color: #475778;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .wb-copy-item small {
+        color: var(--wu-muted);
+      }
+
+      .wb-content p {
+        color: #dce7ff;
+        line-height: 1.72;
+      }
+
+      .wb-content h2 {
+        margin-top: 1.4rem;
+        font-size: 1.68rem;
+      }
+
+      .wb-content h3 {
+        margin-top: 1.12rem;
+        font-size: 1.24rem;
+      }
+
+      .wb-content li { color: #cedbf5; line-height: 1.65; }
+      .wb-content a { color: var(--wu-link); text-decoration: none; }
+
+      .wb-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.9rem;
+        overflow: hidden;
+        border-radius: 12px;
+        border: 1px solid var(--wu-line);
+      }
+
+      .wb-content th,
+      .wb-content td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.55rem 0.62rem;
+        text-align: left;
+      }
+
+      .wb-content th {
+        background: rgba(255, 255, 255, 0.06);
+        font-weight: 700;
+      }
+
+      .wb-content pre {
+        overflow-x: auto;
+        border: 1px solid #3a4866;
+        border-radius: 12px;
+        background: #151d2a;
+        padding: 0.85rem;
+      }
+
+      .wb-content code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 980px) {
+        .wb-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .wb-sidebar {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--wu-line);
+          overflow: visible;
+        }
+
+        .wb-title-row {
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wb-shell">
+      <aside class="wb-sidebar">
+        <a class="wb-logo" href="/">
+          <img src="https://ch0wn3rs.ninja/neyi21.jpeg" alt="Neyi21 logo" />
+          <span>Neyi21 Writeups</span>
+        </a>
+        <div class="wb-divider"></div>
+        <nav class="wb-nav">
+          {navItems.map((item) => (
+            <a
+              class={!item.href.startsWith('http') && currentPath === item.href ? 'active' : ''}
+              href={item.href}
+              target={item.href.startsWith('http') ? '_blank' : undefined}
+              rel="noreferrer"
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+        <div class="wb-powered">Writeups hub</div>
+      </aside>
+
+      <main class="wb-main">
+        <header class="wb-topbar"></header>
+
+        <div class="wb-content-wrap">
+          <div class="wb-title-row">
+            <div class="wb-copy-wrap">
+              <div class="wb-split">
+                <a class="wb-download" href="/writeups/dukes_dbar.md" download aria-label="Descargar markdown">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 3.99a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.41L11 12.6V4a1 1 0 0 1 1-1ZM5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/>
+                  </svg>
+                </a>
+                <button class="wb-copy" id="copy-menu-btn" type="button">Copy</button>
+              </div>
+              <div class="wb-copy-menu" id="copy-menu" hidden>
+                <button class="wb-copy-item" id="copy-page-btn" type="button">
+                  <strong>Copy page</strong>
+                  <small>Copiar contenido en formato Markdown</small>
+                </button>
+                <a class="wb-copy-item" href="/writeups/dukes_dbar.md" download>
+                  <strong>Descargar Markdown</strong>
+                  <small>Descarga el archivo .md del writeup</small>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <article class="wb-content">
+            <slot />
+          </article>
+        </div>
+      </main>
+    </div>
+    <script is:inline>
+      const copyMenuBtn = document.getElementById('copy-menu-btn');
+      const copyMenu = document.getElementById('copy-menu');
+      const copyPageBtn = document.getElementById('copy-page-btn');
+
+      function closeCopyMenu() {
+        if (copyMenu) copyMenu.setAttribute('hidden', '');
+      }
+
+      copyMenuBtn?.addEventListener('click', () => {
+        if (!copyMenu) return;
+        if (copyMenu.hasAttribute('hidden')) {
+          copyMenu.removeAttribute('hidden');
+        } else {
+          closeCopyMenu();
+        }
+      });
+
+      copyPageBtn?.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/writeups/dukes_dbar.md');
+          const text = await res.text();
+          await navigator.clipboard.writeText(text);
+          copyPageBtn.textContent = 'Copiado';
+          setTimeout(() => {
+            copyPageBtn.innerHTML =
+              '<strong>Copy page</strong><small>Copiar contenido en formato Markdown</small>';
+          }, 1200);
+        } catch {}
+        closeCopyMenu();
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!target || !(target instanceof Element)) return;
+        if (!copyMenu?.contains(target) && target !== copyMenuBtn) {
+          closeCopyMenu();
+        }
+      });
+    </script>
+  </body>
+</html>
