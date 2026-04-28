@@ -80,6 +80,20 @@ const t = lang === 'en'
     };
 
 const basePath = '/writeups';
+const iconMap: Record<string, string> = {
+  home: 'https://cdn.simpleicons.org/homeassistant/8fdfff',
+  forense: 'https://cdn.simpleicons.org/wireshark/8fdfff',
+  forensics: 'https://cdn.simpleicons.org/wireshark/8fdfff',
+  osint: 'https://cdn.simpleicons.org/google/8fdfff',
+  criptografia: 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+  'criptografía': 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+  cryptography: 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+};
+
+function iconFor(tag: string): string {
+  return iconMap[tag.toLowerCase()] ?? 'https://cdn.simpleicons.org/bookstack/8fdfff';
+}
+
 const langUrl = (targetLang: 'es' | 'en', base?: string) => {
   const u = new URL(basePath, Astro.url.origin);
   u.searchParams.set('lang', targetLang);
@@ -111,7 +125,10 @@ const langUrl = (targetLang: 'es' | 'en', base?: string) => {
 
       <main class="writeups-menu-shell">
         <aside class="writeups-menu-sidebar">
-          <a class="writeups-menu-home" href={lang === 'en' ? '/en/#writeups' : '/#writeups'}>{t.home}</a>
+          <a class="writeups-menu-home" href={lang === 'en' ? '/en/#writeups' : '/#writeups'}>
+            <img src={iconFor('home')} alt="" aria-hidden="true" />
+            {t.home}
+          </a>
           <h2>{t.menuTitle}</h2>
           <nav>
             {list.map((item, idx) => (
@@ -121,7 +138,10 @@ const langUrl = (targetLang: 'es' | 'en', base?: string) => {
               >
                 <span class="writeups-menu-num">{String(idx + 1).padStart(2, '0')}</span>
                 <span>
-                  <small>{item.tag}</small>
+                  <small>
+                    <img src={iconFor(item.tag)} alt="" aria-hidden="true" />
+                    {item.tag}
+                  </small>
                   <strong>{item.title}</strong>
                 </span>
               </a>

@@ -2202,20 +2202,27 @@ html[lang='en'] .writeup-content pre.is-scrollable::before {
 .writeups-menu-sidebar {
   min-width: 0;
   overflow: auto;
-  border-right: 1px solid #2a3142;
-  background: rgba(14, 18, 27, 0.86);
+  border-right: 1px solid rgba(49, 70, 103, 0.55);
+  background: rgba(14, 18, 27, 0.62);
   padding: 1rem 0.8rem;
 }
 
 .writeups-menu-home {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   margin-bottom: 0.9rem;
   padding: 0.45rem 0.7rem;
   border-radius: 10px;
-  border: 1px solid #3b4f70;
+  border: 1px solid #36507a;
   text-decoration: none;
   color: #8fdfff;
   font-weight: 700;
+}
+
+.writeups-menu-home img {
+  width: 16px;
+  height: 16px;
 }
 
 .writeups-menu-sidebar h2 {
@@ -2236,7 +2243,7 @@ html[lang='en'] .writeup-content pre.is-scrollable::before {
   gap: 0.7rem;
   align-items: center;
   padding: 0.72rem;
-  border: 1px solid #30425f;
+  border: 1px solid #2d415f;
   border-radius: 12px;
   text-decoration: none;
   color: #d8e6ff;
@@ -2262,12 +2269,21 @@ html[lang='en'] .writeup-content pre.is-scrollable::before {
 }
 
 .writeups-menu-link small {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: #9eaaca;
   letter-spacing: 0.08em;
   font-size: 0.84rem;
   margin-bottom: 0.12rem;
   text-transform: uppercase;
+}
+
+.writeups-menu-link small img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  opacity: 0.96;
 }
 
 .writeups-menu-link strong {
