@@ -1,0 +1,147 @@
+---
+import '../../styles/global.css';
+
+type WriteupItem = {
+  slug: string;
+  baseSlug: string;
+  lang: 'es' | 'en';
+  title: string;
+  tag: string;
+  url: string;
+};
+
+const modules = import.meta.glob('./*.md', { eager: true });
+const grouped = new Map<string, { es?: WriteupItem; en?: WriteupItem }>();
+
+for (const [path, mod] of Object.entries(modules)) {
+  const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
+  const isEn = slug.endsWith('-en');
+  const baseSlug = isEn ? slug.slice(0, -3) : slug;
+  const fm = (mod as any).frontmatter ?? {};
+  const item: WriteupItem = {
+    slug,
+    baseSlug,
+    lang: isEn ? 'en' : 'es',
+    title: fm.title || baseSlug.replaceAll('-', ' '),
+    tag: fm.tag || 'WRITEUP',
+    url: `/writeups/${slug}/`,
+  };
+  const row = grouped.get(baseSlug) ?? {};
+  if (isEn) row.en = item;
+  else row.es = item;
+  grouped.set(baseSlug, row);
+}
+
+const lang = Astro.url.searchParams.get('lang') === 'en' ? 'en' : 'es';
+const selectedBaseSlug = Astro.url.searchParams.get('w') ?? 'ecb-lasagna';
+
+const list = Array.from(grouped.entries())
+  .map(([baseSlug, versions]) => {
+    const selected = lang === 'en' ? versions.en ?? versions.es : versions.es ?? versions.en;
+    if (!selected) return null;
+    return {
+      baseSlug,
+      title: selected.title,
+      tag: selected.tag,
+      esUrl: versions.es?.url ?? selected.url,
+      enUrl: versions.en?.url ?? selected.url,
+    };
+  })
+  .filter(Boolean) as Array<{
+  baseSlug: string;
+  title: string;
+  tag: string;
+  esUrl: string;
+  enUrl: string;
+}>;
+
+const fallback = list[0];
+const selected = list.find((x) => x.baseSlug === selectedBaseSlug) ?? fallback;
+const activeUrl = lang === 'en' ? selected?.enUrl : selected?.esUrl;
+
+const t = lang === 'en'
+  ? {
+      pageTitle: 'Writeups',
+      menuTitle: 'Writeups',
+      home: 'Home',
+      open: 'Open full page',
+      loading: 'Loading writeup...',
+      es: 'ES',
+      en: 'EN',
+    }
+  : {
+      pageTitle: 'Writeups',
+      menuTitle: 'Writeups',
+      home: 'Inicio',
+      open: 'Abrir página completa',
+      loading: 'Cargando writeup...',
+      es: 'ES',
+      en: 'EN',
+    };
+
+const basePath = '/writeups';
+const langUrl = (targetLang: 'es' | 'en', base?: string) => {
+  const u = new URL(basePath, Astro.url.origin);
+  u.searchParams.set('lang', targetLang);
+  if (base) u.searchParams.set('w', base);
+  return `${u.pathname}${u.search}`;
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Writeups de Neyi21" />
+    <meta name="robots" content="index, follow" />
+    <title>{t.pageTitle} | Neyi21</title>
+    <link rel="shortcut icon" href="/favicon.ico?v=3" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
+  </head>
+  <body class="writeups-menu-body">
+    <div class="writeups-menu-app">
+      <header class="writeups-menu-topbar">
+        <a class="writeups-menu-brand" href={lang === 'en' ? '/en/' : '/'}>Neyi21</a>
+        <div class="lang-switch" aria-label="Language switch">
+          <a class={`lang-btn ${lang === 'es' ? 'is-active' : ''}`} href={langUrl('es', selected?.baseSlug)}>{t.es}</a>
+          <a class={`lang-btn ${lang === 'en' ? 'is-active' : ''}`} href={langUrl('en', selected?.baseSlug)}>{t.en}</a>
+        </div>
+      </header>
+
+      <main class="writeups-menu-shell">
+        <aside class="writeups-menu-sidebar">
+          <a class="writeups-menu-home" href={lang === 'en' ? '/en/#writeups' : '/#writeups'}>{t.home}</a>
+          <h2>{t.menuTitle}</h2>
+          <nav>
+            {list.map((item, idx) => (
+              <a
+                class={`writeups-menu-link ${item.baseSlug === selected?.baseSlug ? 'is-active' : ''}`}
+                href={langUrl(lang, item.baseSlug)}
+              >
+                <span class="writeups-menu-num">{String(idx + 1).padStart(2, '0')}</span>
+                <span>
+                  <small>{item.tag}</small>
+                  <strong>{item.title}</strong>
+                </span>
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        <section class="writeups-menu-content">
+          {activeUrl ? (
+            <>
+              <div class="writeups-menu-actions">
+                <a href={activeUrl} target="_blank" rel="noreferrer">{t.open}</a>
+              </div>
+              <iframe src={activeUrl} title={selected?.title ?? 'writeup'} loading="eager"></iframe>
+            </>
+          ) : (
+            <p>{t.loading}</p>
+          )}
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
