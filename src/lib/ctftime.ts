@@ -63,6 +63,9 @@ async function fetchJson<T>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promis
       signal: controller.signal,
       headers: {
         Accept: 'application/json',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        Referer: 'https://ctftime.org/',
       },
     });
 
@@ -79,6 +82,32 @@ async function fetchJson<T>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promis
 function normalizeNumber(value: unknown, fallback = 0): number {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : fallback;
+}
+
+function pickLatestRatingRecord(
+  rating: TeamApiResponse['rating'],
+  preferredYear: number
+): { year: number; values: NonNullable<TeamApiResponse['rating']>[string] } | null {
+  const source = rating ?? {};
+  const preferred = source[String(preferredYear)];
+  if (preferred && Object.keys(preferred).length > 0) {
+    return { year: preferredYear, values: preferred };
+  }
+
+  const candidates = Object.entries(source)
+    .map(([year, values]) => ({ year: Number(year), values }))
+    .filter(
+      (item) =>
+        Number.isFinite(item.year) &&
+        item.values &&
+        Object.keys(item.values).length > 0 &&
+        (item.values.rating_place !== undefined ||
+          item.values.country_place !== undefined ||
+          item.values.rating_points !== undefined)
+    )
+    .sort((a, b) => b.year - a.year);
+
+  return candidates[0] ?? null;
 }
 
 type TeamApiResponse = {
@@ -182,14 +211,15 @@ export async function getPortfolioData(): Promise<PortfolioData> {
 
   try {
     const teamData = await fetchJson<TeamApiResponse>(`${API_BASE}/teams/${TEAM_ID}/`);
-    const teamRating = teamData?.rating?.[String(currentYear)] ?? {};
+    const selectedRating = pickLatestRatingRecord(teamData?.rating, currentYear);
+    const teamRating = selectedRating?.values ?? {};
     const aliases = [teamData?.name, teamData?.primary_alias, ...(teamData?.aliases ?? [])]
       .map((entry) => String(entry || '').trim())
       .filter(Boolean);
 
     const team: TeamSnapshot = {
       name: teamData?.name || FALLBACK_DATA.team.name,
-      year: currentYear,
+      year: selectedRating?.year ?? currentYear,
       globalRank: normalizeNumber(teamRating?.rating_place, FALLBACK_DATA.team.globalRank),
       countryRank: normalizeNumber(teamRating?.country_place, FALLBACK_DATA.team.countryRank),
       ratingPoints: normalizeNumber(teamRating?.rating_points, FALLBACK_DATA.team.ratingPoints),

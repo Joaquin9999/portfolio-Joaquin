@@ -22,6 +22,7 @@ body {
   font-family: 'Segoe UI', 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
   line-height: 1.45;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 15% 0%, rgba(55, 91, 144, 0.28), transparent 30%),
     radial-gradient(circle at 85% 100%, rgba(45, 190, 220, 0.12), transparent 28%),
@@ -87,6 +88,31 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 1.15rem;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  border: 1px solid rgba(74, 96, 134, 0.55);
+  border-radius: 999px;
+  padding: 0.2rem;
+  background: rgba(10, 15, 24, 0.65);
+}
+
+.lang-btn {
+  text-decoration: none;
+  color: #b9c7de;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+}
+
+.lang-btn.is-active {
+  color: #eff7ff;
+  background: rgba(106, 181, 255, 0.22);
+  border: 1px solid rgba(106, 181, 255, 0.46);
 }
 
 .mobile-nav-toggle {
@@ -914,6 +940,8 @@ h1 {
 
 .wb-app {
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .wb-topbar {
@@ -924,6 +952,16 @@ h1 {
   justify-content: space-between;
   padding: 0 1.1rem;
   background: rgba(18, 20, 24, 0.84);
+  width: 100%;
+  max-width: 100%;
+}
+
+.wb-topbar-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .wb-brand {
@@ -937,6 +975,7 @@ h1 {
   border: 1px solid rgba(98, 113, 143, 0.44);
   border-radius: 14px;
   min-width: 285px;
+  max-width: 100%;
   color: #a2adbf;
   display: inline-flex;
   align-items: center;
@@ -972,6 +1011,8 @@ h1 {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   min-height: calc(100vh - 74px);
+  width: 100%;
+  max-width: 100%;
 }
 
 .wb-sidebar {
@@ -980,6 +1021,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+  min-width: 0;
 }
 
 .wb-nav {
@@ -1035,6 +1077,7 @@ h1 {
 
 .wb-content {
   padding: 1.4rem 2.3rem 2.2rem;
+  min-width: 0;
 }
 
 .wb-copy-row {
@@ -1064,7 +1107,8 @@ h1 {
 }
 
 .wb-markdown {
-  max-width: 1040px;
+  width: 100%;
+  max-width: none;
 }
 
 .writeup-page-shell {
@@ -1104,6 +1148,10 @@ h1 {
   margin-top: 1rem;
 }
 
+.writeup-content > h1:first-child {
+  display: none;
+}
+
 .writeup-content h2,
 .writeup-content h3 {
   margin-top: 1.1rem;
@@ -1114,6 +1162,116 @@ h1 {
 .writeup-content li {
   color: #d7e3f8;
   line-height: 1.55;
+}
+
+.writeup-content img {
+  display: block;
+  width: auto;
+  max-width: min(100%, 980px);
+  height: auto;
+  margin: 0.9rem auto 1.1rem;
+  border: 1px solid rgba(95, 130, 188, 0.45);
+  border-radius: 12px;
+  object-fit: contain;
+  background: rgba(8, 13, 22, 0.55);
+}
+
+.writeup-content pre {
+  margin: 0.95rem 0 1.2rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(112, 150, 214, 0.4);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(20, 26, 38, 0.95) 0%, rgba(14, 20, 31, 0.97) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(150, 195, 255, 0.08),
+    0 8px 28px rgba(2, 10, 21, 0.38);
+  overflow-x: auto;
+}
+
+.writeup-content pre.is-scrollable::before {
+  content: 'Desliza ↔';
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  padding: 0.1rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 170, 230, 0.5);
+  background: rgba(10, 15, 26, 0.88);
+  color: #9ed9ff;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  z-index: 2;
+}
+
+html[lang='en'] .writeup-content pre.is-scrollable::before {
+  content: 'Scroll ↔';
+}
+
+.writeup-content pre.is-scrollable::after {
+  content: none;
+}
+
+.writeup-content pre.is-scrollable {
+  padding-bottom: 1.85rem;
+}
+
+.writeup-content pre.is-scrollable code {
+  display: block;
+}
+
+.writeup-content pre code {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: clamp(0.98rem, 0.25vw + 0.94rem, 1.08rem);
+  line-height: 1.72;
+}
+
+.writeup-content :not(pre) > code {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.96em;
+  padding: 0.12rem 0.38rem;
+  border-radius: 8px;
+  border: 1px solid rgba(117, 163, 226, 0.35);
+  background: rgba(87, 137, 207, 0.14);
+  color: #cfe8ff;
+}
+
+@media print {
+  .wb-topbar,
+  .wb-sidebar,
+  .wb-copy-row {
+    display: none !important;
+  }
+
+  .wb-shell {
+    display: block;
+    min-height: auto;
+  }
+
+  .wb-content {
+    padding: 0 !important;
+  }
+
+  .wb-head h1 {
+    margin-top: 0;
+  }
+
+  .writeup-content pre {
+    white-space: pre-wrap;
+    overflow: visible;
+    break-inside: avoid;
+    box-shadow: none;
+    background: #101624;
+  }
+
+  .writeup-content img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
 }
 
 .writeup-page-wrap {
@@ -1131,47 +1289,80 @@ h1 {
   margin-top: 1rem;
   display: grid;
   gap: 0.65rem;
+  max-height: calc((128px * 4) + (0.65rem * 3));
+  overflow-y: scroll;
+  padding-right: 0.45rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(122, 172, 235, 0.58) rgba(10, 16, 28, 0.45);
+}
+
+.writeups-krauq-grid::-webkit-scrollbar {
+  width: 10px;
+}
+
+.writeups-krauq-grid::-webkit-scrollbar-track {
+  background: rgba(10, 16, 28, 0.45);
+  border-radius: 999px;
+}
+
+.writeups-krauq-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(129, 184, 255, 0.9), rgba(115, 224, 255, 0.55));
+  border-radius: 999px;
+  border: 2px solid rgba(10, 16, 28, 0.5);
 }
 
 .writeup-entry {
   text-decoration: none;
   color: var(--text);
-  border: 1px solid #343c4f;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(20, 25, 36, 0.9), rgba(14, 18, 27, 0.92));
-  padding: 0.85rem;
+  border: 1px solid rgba(67, 84, 114, 0.55);
+  border-radius: 18px;
+  background: rgba(13, 18, 29, 0.82);
+  padding: 0.9rem 1rem;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 0.8rem;
+  gap: 0.95rem;
   align-items: center;
   position: relative;
   overflow: hidden;
+  min-width: 0;
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+  min-height: 128px;
+}
+
+.writeup-entry:hover {
+  border-color: rgba(107, 145, 206, 0.78);
+  background: rgba(15, 22, 35, 0.9);
+  transform: translateY(-1px);
 }
 
 .writeup-index {
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.1rem;
+  height: 2.1rem;
   display: grid;
   place-items: center;
-  border-radius: 10px;
-  border: 1px solid #3e4a66;
-  background: rgba(115, 224, 255, 0.08);
-  font-size: 0.82rem;
+  border-radius: 12px;
+  border: 1px solid rgba(84, 110, 152, 0.72);
+  background: rgba(115, 224, 255, 0.06);
+  font-size: 0.72rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-  color: #9ed9ff;
+  color: #9bd7ff;
 }
 
 .writeup-tag {
   margin: 0;
-  color: #a8b6d8;
-  font-size: 0.77rem;
-  letter-spacing: 0.05em;
+  color: #9baacc;
+  font-size: 0.73rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .writeup-entry h3 {
-  margin: 0.2rem 0 0;
-  font-size: 1rem;
+  margin: 0.18rem 0 0;
+  font-size: clamp(1.22rem, 1.65vw, 1.75rem);
+  line-height: 1.16;
+  letter-spacing: -0.01em;
+  font-weight: 650;
 }
 
 .writeup-entry p {
@@ -1181,8 +1372,15 @@ h1 {
 }
 
 .writeup-arrow {
-  font-size: 1.2rem;
-  color: var(--accent);
+  font-size: 1.95rem;
+  color: #66cfff;
+  opacity: 0.92;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.writeup-entry:hover .writeup-arrow {
+  transform: translateX(2px);
+  opacity: 1;
 }
 
 .cards-grid {
@@ -1369,6 +1567,7 @@ h1 {
   width: 0.9rem;
   height: 0.9rem;
   object-fit: contain;
+  filter: brightness(0) invert(1) saturate(0) opacity(0.92);
 }
 
 .tag-row .tool-dot {
@@ -1434,6 +1633,7 @@ h1 {
   width: 0.9rem;
   height: 0.9rem;
   object-fit: contain;
+  filter: brightness(0) invert(1) saturate(0) opacity(0.92);
 }
 
 .skill-dot {
@@ -1618,26 +1818,60 @@ h1 {
   }
 
   .wb-shell {
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-
-  .wb-content {
-    padding: 1.2rem 1.5rem 1.8rem;
-  }
-}
-
-@media (max-width: 980px) {
-  .wb-shell {
     grid-template-columns: 1fr;
   }
 
   .wb-sidebar {
     border-right: 0;
     border-bottom: 1px solid rgba(90, 102, 122, 0.24);
+    padding: 0.85rem 0.95rem;
+  }
+
+  .wb-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem 0.4rem;
   }
 
   .wb-content {
-    padding: 1rem 1rem 1.4rem;
+    padding: 1rem 1.1rem 1.6rem;
+  }
+
+  .wb-topbar {
+    height: auto;
+    padding: 0.7rem 0.85rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .wb-topbar-controls {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .wb-search-wrap {
+    flex: 1 1 360px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 980px) {
+  .wb-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-content {
+    padding: 0.95rem 0.9rem 1.3rem;
+  }
+
+  .wb-topbar-controls {
+    justify-content: stretch;
+  }
+
+  .wb-search-wrap {
+    width: 100%;
+    flex-basis: 100%;
   }
 
   .cards-grid,
@@ -1695,6 +1929,14 @@ h1 {
     display: none;
   }
 
+  .writeup-entry h3 {
+    font-size: clamp(1.1rem, 4.1vw, 1.4rem);
+  }
+
+  .writeups-krauq-grid {
+    max-height: calc((112px * 4) + (0.65rem * 3));
+  }
+
   .writeups-gitbook-shell {
     grid-template-columns: 1fr;
   }
@@ -1716,6 +1958,15 @@ h1 {
     padding-right: 0;
   }
 
+  .writeup-content pre {
+    padding: 0.85rem 0.88rem;
+  }
+
+  .writeup-content pre code {
+    font-size: 0.93rem;
+    line-height: 1.62;
+  }
+
   .contact-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1733,6 +1984,22 @@ h1 {
   .wb-search-wrap {
     width: 100%;
     min-width: 0;
+  }
+
+  .wb-topbar-controls {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .wb-topbar-controls .lang-switch {
+    align-self: flex-end;
+  }
+
+  .wb-nav-link,
+  .wb-home-link {
+    font-size: 0.95rem;
   }
 
   .writeup-page-wrap {
@@ -1823,6 +2090,41 @@ h1 {
 
   .wb-copy-row {
     justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .wb-head h1 {
+    font-size: clamp(1.6rem, 8vw, 2.25rem);
+  }
+
+  .writeup-content {
+    margin-top: 0.75rem;
+  }
+
+  .writeup-content p,
+  .writeup-content li {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .writeup-content pre {
+    padding: 0.74rem 0.72rem;
+    border-radius: 10px;
+  }
+
+  .writeup-content pre.is-scrollable {
+    padding-bottom: 1.6rem;
+  }
+
+  .writeup-content pre code {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .writeup-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 0.75rem auto 0.95rem;
   }
 }
 

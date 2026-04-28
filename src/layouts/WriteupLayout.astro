@@ -6,17 +6,34 @@ interface Props {
   description?: string;
   date?: string;
   tags?: string[];
+  frontmatter?: {
+    title?: string;
+    description?: string;
+    date?: string;
+    tags?: string[];
+  };
 }
 
+const frontmatter = Astro.props.frontmatter ?? {};
 const {
   title = 'Writeup',
-  description = 'Writeup técnico',
+  description = 'Technical writeup',
   date,
   tags = [],
-} = Astro.props;
+} = {
+  ...frontmatter,
+  ...Astro.props,
+} as Props;
+
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
 const imageUrl = new URL('/images/neyi-pixel.jpg', Astro.site ?? Astro.url.origin).toString();
-const keywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF writeups, ciberseguridad, seguridad informatica';
+const keywords = 'Neyi, Neyi21, Joaquin Castaño, Joaquin Castano, Ch0wn3rs, CTF writeups, cybersecurity, seguridad informatica';
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+const currentSlug = currentPath.split('/').filter(Boolean).pop() ?? '';
+const currentLang = currentSlug.endsWith('-en') ? 'en' : 'es';
+const currentBaseSlug = currentLang === 'en' ? currentSlug.slice(0, -3) : currentSlug;
+
 const articleStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'Article',
@@ -38,26 +55,70 @@ const articleStructuredData = {
 };
 
 const writeupModules = import.meta.glob('../pages/writeups/*.md', { eager: true });
-const writeupsNav = Object.entries(writeupModules)
-  .map(([path, module]) => {
-    const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
-    const frontmatter = (module as any).frontmatter ?? {};
+
+type WriteupVersion = {
+  slug: string;
+  title: string;
+  tag: string;
+  date: string;
+};
+
+type NavItem = {
+  baseSlug: string;
+  title: string;
+  tag: string;
+  date: string;
+  urlEs: string;
+  urlEn: string;
+};
+
+const grouped = new Map<string, { es?: WriteupVersion; en?: WriteupVersion }>();
+
+for (const [path, module] of Object.entries(writeupModules)) {
+  const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
+  const fm = (module as any).frontmatter ?? {};
+  const isEn = slug.endsWith('-en');
+  const baseSlug = isEn ? slug.slice(0, -3) : slug;
+  const version: WriteupVersion = {
+    slug,
+    title: fm.title || baseSlug.replaceAll('-', ' '),
+    tag: fm.tag || 'Writeup',
+    date: fm.date || '',
+  };
+  const row = grouped.get(baseSlug) ?? {};
+  if (isEn) row.en = version;
+  else row.es = version;
+  grouped.set(baseSlug, row);
+}
+
+const writeupsNav = Array.from(grouped.entries())
+  .map(([baseSlug, versions]): NavItem | null => {
+    const preferred = currentLang === 'en' ? versions.en ?? versions.es : versions.es ?? versions.en;
+    if (!preferred) return null;
+    const esVersion = versions.es ?? versions.en;
+    const enVersion = versions.en ?? versions.es;
+    if (!esVersion || !enVersion) return null;
+
     return {
-      slug,
-      url: `/writeups/${slug}`,
-      title: frontmatter.title || slug.replaceAll('-', ' '),
-      tag: frontmatter.tag || 'Writeup',
-      date: frontmatter.date || '',
+      baseSlug,
+      title: preferred.title,
+      tag: preferred.tag,
+      date: preferred.date,
+      urlEs: `/writeups/${esVersion.slug}`,
+      urlEn: `/writeups/${enVersion.slug}`,
     };
   })
+  .filter(Boolean)
   .sort((a, b) => {
-    if (!a.date && !b.date) return a.title.localeCompare(b.title);
-    if (!a.date) return 1;
-    if (!b.date) return -1;
+    if (!a?.date && !b?.date) return String(a?.title).localeCompare(String(b?.title));
+    if (!a?.date) return 1;
+    if (!b?.date) return -1;
     return String(b.date).localeCompare(String(a.date));
-  });
+  }) as NavItem[];
 
-const currentPath = Astro.url.pathname.replace(/\/$/, '');
+const currentVariantPath = currentLang === 'en' ? `/writeups/${currentSlug}` : `/writeups/${currentSlug}`;
+const currentEsPath = `/writeups/${currentBaseSlug}`;
+const currentEnPath = `/writeups/${currentBaseSlug}-en`;
 
 const tagIconMap: Record<string, string> = {
   forensics: 'https://cdn.simpleicons.org/wireshark/8fdfff',
@@ -69,17 +130,44 @@ const tagIconMap: Record<string, string> = {
   malware: 'https://cdn.simpleicons.org/virustotal/8fdfff',
 };
 
-function resolveWriteupIcon(tag: string, title: string): string {
-  const key = `${tag} ${title}`.toLowerCase();
+function resolveWriteupIcon(tag: string, writeupTitle: string): string {
+  const key = `${tag} ${writeupTitle}`.toLowerCase();
   for (const candidate of Object.keys(tagIconMap)) {
     if (key.includes(candidate)) return tagIconMap[candidate];
   }
   return 'https://cdn.simpleicons.org/bookstack/8fdfff';
 }
+
+const t = {
+  es: {
+    locale: 'es',
+    searchPlaceholder: 'Buscar...',
+    home: 'Home',
+    copy: 'Copiar',
+    copyOk: 'Copiado',
+    copyErr: 'Sin copia',
+    downloadPdf: 'Descargar PDF',
+    preparingPdf: 'Preparando PDF',
+    techWriteup: 'Writeup técnico',
+    navAria: 'Navegación de writeups',
+  },
+  en: {
+    locale: 'en',
+    searchPlaceholder: 'Search...',
+    home: 'Home',
+    copy: 'Copy',
+    copyOk: 'Copied',
+    copyErr: 'No copy',
+    downloadPdf: 'Download PDF',
+    preparingPdf: 'Preparing PDF',
+    techWriteup: 'Technical writeup',
+    navAria: 'Writeups navigation',
+  },
+}[currentLang as 'es' | 'en'];
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={t.locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,7 +177,7 @@ function resolveWriteupIcon(tag: string, title: string): string {
     <meta name="robots" content="index, follow" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
     <meta name="theme-color" content="#0a0f1a" />
-    <meta property="og:locale" content="es_CO" />
+    <meta property="og:locale" content={currentLang === 'en' ? 'en_US' : 'es_CO'} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="shortcut icon" href="/favicon.ico?v=3" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=3" />
@@ -115,44 +203,52 @@ function resolveWriteupIcon(tag: string, title: string): string {
   <body class="wb-body">
     <div class="wb-app">
       <header class="wb-topbar">
-        <a class="wb-brand" href="/">Neyi21</a>
-        <label class="wb-search-wrap" for="wb-search-input">
-          <span aria-hidden="true">⌕</span>
-          <input id="wb-search-input" type="search" placeholder="Search..." autocomplete="off" />
-          <kbd>⌘ K</kbd>
-        </label>
+        <a class="wb-brand" href={currentLang === 'en' ? '/en/' : '/'}>Neyi21</a>
+        <div class="wb-topbar-controls">
+          <label class="wb-search-wrap" for="wb-search-input">
+            <span aria-hidden="true">⌕</span>
+            <input id="wb-search-input" type="search" placeholder={t.searchPlaceholder} autocomplete="off" />
+            <kbd>⌘ K</kbd>
+          </label>
+          <div class="lang-switch" aria-label="Language switch">
+            <a class={`lang-btn ${currentLang === 'es' ? 'is-active' : ''}`} href={currentEsPath}>ES</a>
+            <a class={`lang-btn ${currentLang === 'en' ? 'is-active' : ''}`} href={currentEnPath}>EN</a>
+          </div>
+        </div>
       </header>
 
       <div class="wb-shell">
         <aside class="wb-sidebar">
-          <nav class="wb-nav" aria-label="Navegación de writeups">
-            <a class="wb-home-link" href="/#writeups">
+          <nav class="wb-nav" aria-label={t.navAria}>
+            <a class="wb-home-link" href={currentLang === 'en' ? '/en/#writeups' : '/#writeups'}>
               <img src="https://cdn.simpleicons.org/homeassistant/8fdfff" alt="" aria-hidden="true" />
-              <span>Home</span>
+              <span>{t.home}</span>
             </a>
-            {writeupsNav.map((item) => (
-              <a
-                class={`wb-nav-link ${currentPath === item.url ? 'is-active' : ''}`}
-                href={item.url}
-                data-writeup-link
-                data-title={item.title.toLowerCase()}
-              >
-                <img src={resolveWriteupIcon(item.tag, item.title)} alt="" aria-hidden="true" />
-                <span>{item.title}</span>
-              </a>
-            ))}
+            {writeupsNav.map((item) => {
+              const itemUrl = currentLang === 'en' ? item.urlEn : item.urlEs;
+              return (
+                <a
+                  class={`wb-nav-link ${currentVariantPath === itemUrl ? 'is-active' : ''}`}
+                  href={itemUrl}
+                  data-writeup-link
+                  data-title={item.title.toLowerCase()}
+                >
+                  <img src={resolveWriteupIcon(item.tag, item.title)} alt="" aria-hidden="true" />
+                  <span>{item.title}</span>
+                </a>
+              );
+            })}
           </nav>
         </aside>
 
         <main class="wb-content">
           <div class="wb-copy-row">
-            <button type="button" data-copy-writeup>Copy</button>
-            <button type="button" data-download-writeup>Download</button>
+            <button type="button" data-copy-writeup>{t.copy}</button>
+            <button type="button" data-download-writeup>{t.downloadPdf}</button>
           </div>
           <header class="wb-head">
             <h1>{title}</h1>
-            <p>{description}</p>
-            {date && <p class="result-date">Fecha: {date}</p>}
+            {description && description.trim().length > 0 && <p>{description}</p>}
             {tags.length > 0 && (
               <div class="skills-tag-grid">
                 {tags.map((tag) => (
@@ -162,7 +258,7 @@ function resolveWriteupIcon(tag: string, title: string): string {
             )}
           </header>
 
-          <section class="wb-markdown writeup-content">
+          <section class="wb-markdown writeup-content" id="writeup-print-area">
             <slot />
           </section>
         </main>
@@ -176,6 +272,22 @@ function resolveWriteupIcon(tag: string, title: string): string {
         const copyBtn = document.querySelector('[data-copy-writeup]');
         const downloadBtn = document.querySelector('[data-download-writeup]');
 
+        const currentLang = document.documentElement.lang === 'en' ? 'en' : 'es';
+        const i18n = {
+          es: {
+            copied: 'Copiado',
+            copyErr: 'Sin copia',
+            noContent: 'Sin contenido',
+            preparingPdf: 'Preparando PDF',
+          },
+          en: {
+            copied: 'Copied',
+            copyErr: 'No copy',
+            noContent: 'No content',
+            preparingPdf: 'Preparing PDF',
+          },
+        }[currentLang];
+
         const setButtonLabel = (button, label) => {
           if (!button) return;
           const previous = button.textContent;
@@ -186,6 +298,14 @@ function resolveWriteupIcon(tag: string, title: string): string {
         };
 
         const writeupText = () => (markdownBlock?.textContent || '').trim();
+        const codeBlocks = Array.from(document.querySelectorAll('.writeup-content pre'));
+
+        const refreshScrollableCodeBlocks = () => {
+          codeBlocks.forEach((block) => {
+            const hasOverflow = block.scrollWidth > block.clientWidth + 4;
+            block.classList.toggle('is-scrollable', hasOverflow);
+          });
+        };
 
         if (searchInput && navLinks.length > 0) {
           const applyFilter = () => {
@@ -219,33 +339,26 @@ function resolveWriteupIcon(tag: string, title: string): string {
             const payload = writeupText() || window.location.href;
             try {
               await navigator.clipboard.writeText(payload);
-              setButtonLabel(copyBtn, 'Copied');
+              setButtonLabel(copyBtn, i18n.copied);
             } catch {
-              setButtonLabel(copyBtn, 'No copy');
+              setButtonLabel(copyBtn, i18n.copyErr);
             }
           });
         }
 
         if (downloadBtn) {
           downloadBtn.addEventListener('click', () => {
-            const payload = writeupText();
-            if (!payload) {
-              setButtonLabel(downloadBtn, 'No content');
+            if (!writeupText()) {
+              setButtonLabel(downloadBtn, i18n.noContent);
               return;
             }
-            const slug = window.location.pathname.split('/').filter(Boolean).pop() || 'writeup';
-            const blob = new Blob([payload], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = `${slug}.txt`;
-            document.body.appendChild(anchor);
-            anchor.click();
-            anchor.remove();
-            URL.revokeObjectURL(url);
-            setButtonLabel(downloadBtn, 'Downloaded');
+            setButtonLabel(downloadBtn, i18n.preparingPdf);
+            window.print();
           });
         }
+
+        refreshScrollableCodeBlocks();
+        window.addEventListener('resize', refreshScrollableCodeBlocks, { passive: true });
       })();
     </script>
   </body>

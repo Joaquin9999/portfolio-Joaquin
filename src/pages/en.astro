@@ -14,7 +14,7 @@ const localWriteups = Object.entries(writeupModules).map(([path, module]) => {
     baseSlug,
     isEn,
     title: frontmatter.title || slug.replaceAll('-', ' '),
-    description: frontmatter.description || 'Writeup tecnico.',
+    description: frontmatter.description || 'Technical writeup.',
     tag: frontmatter.tag || 'Writeup',
     date: frontmatter.date || '',
   };
@@ -31,7 +31,7 @@ for (const entry of localWriteups) {
 
 const writeupsGitbooks = Array.from(writeupsByBase.entries())
   .map(([baseSlug, versions]) => {
-    const preferred = versions.es ?? versions.en;
+    const preferred = versions.en ?? versions.es;
     if (!preferred) return null;
     return {
       title: preferred.title,
@@ -62,77 +62,77 @@ const writeupsGitbooks = Array.from(writeupsByBase.entries())
 const proyectos = [
   {
     id: 'aulanexa-web-lab',
-    title: 'AulaNexa: rastros en el portal legado',
-    summary: 'Reto CTF web educativo de SQL Injection para reconstruir un incidente en un portal academico legado.',
+    title: 'AulaNexa: Traces in the Legacy Portal',
+    summary: 'Educational web CTF focused on SQL Injection to reconstruct an incident in a legacy academic portal.',
     description:
-      'AulaNexa es una plataforma CTF web educativa enfocada en SQL Injection, donde el participante debe resolver un incidente por fases encadenadas en un portal academico legado. El reto avanza por rutas clave (/login, /directory, /courses, /reports), cada una con evidencias y objetivos tecnicos hasta completar la cadena final. Esta pensada para practica guiada en entornos controlados. Demo publica: https://aulanexa-web.vercel.app',
+      'AulaNexa is an educational web CTF platform focused on SQL Injection, where the participant solves an incident through chained phases in a legacy academic portal. The challenge progresses across key routes (/login, /directory, /courses, /reports), each with evidence and technical goals until the full chain is completed. Built for guided practice in controlled environments. Public demo: https://aulanexa-web.vercel.app',
     tags: ['Python', 'Flask', 'SQLite', 'PostgreSQL', 'Supabase', 'Jinja', 'HTML5', 'CSS3'],
     github: 'https://github.com/Joaquin9999/AulaNexa-LaboratorioDeWeb-Public',
     demo: 'https://aulanexa-web.vercel.app',
-    status: 'Completado',
+    status: 'Completed',
   },
   {
     id: 'bluebox-platform',
     title: 'BlueBox CLI: Blue Team CTF Workspace',
-    summary: 'CLI para CTFs (forense/Blue Team) que organiza casos reproducibles, prepara entorno y optimiza trabajo con agentes LLM.',
+    summary: 'CLI for CTFs (forensics/Blue Team) that organizes reproducible cases, prepares environments, and optimizes LLM-assisted workflows.',
     description:
-      'BlueBox es una CLI orientada a CTFs, especialmente en forense y Blue Team. Permite organizar casos de forma reproducible, preparar un entorno de trabajo con herramientas defensivas y dejar el workspace listo para trabajo eficiente con agentes (LLM). Su objetivo es reducir friccion operativa y disminuir desperdicio de tokens en analisis asistido por IA.',
+      'BlueBox is a CLI built for CTF workflows, especially forensics and Blue Team tasks. It helps organize cases reproducibly, prepare a defensive tooling environment, and keep the workspace ready for efficient LLM-assisted analysis. Its goal is to reduce operational friction and token waste.',
     tags: ['Python', 'Linux', 'Bash', 'LLM Ops'],
     github: 'https://github.com/Joaquin9999/BlueBox',
-    status: 'Completado',
+    status: 'Completed',
   },
   {
     id: 'security-labs',
     title: 'Security Labs & Challenge Authoring',
-    summary: 'Retos tecnicos para formacion y evaluacion de habilidades.',
+    summary: 'Technical challenge authoring for training and skill evaluation.',
     description:
-      'Creacion de laboratorios con pasos de reproduccion, evidencia e impacto para fortalecer analisis tecnico y documentacion profesional.',
+      'Creation of labs with reproducible steps, evidence, and impact-oriented reporting to strengthen technical analysis and professional documentation.',
     tags: ['Python', 'Linux', 'Burp Suite', 'Wireshark', 'Nmap'],
     github: '#',
-    status: 'Proximamente',
+    status: 'Coming Soon',
     upcoming: true,
   },
 ];
 
 const experiencias = [
   {
-    role: 'Fundador y Líder - CTF-UPB (Club de Ciberseguridad)',
-    when: 'Jun 2025 - Actualidad',
+    role: 'Founder & Leader - CTF-UPB (Cybersecurity Club)',
+    when: 'Jun 2025 - Present',
     bullets: [
-      'Lidero entrenamientos, charlas y talleres de seguridad con continuidad del equipo.',
-      'Diseño y creo retos CTF para Linux, redes, web, forense y criptografía.',
+      'Lead recurring security trainings, talks, and workshops.',
+      'Design and build CTF challenges for Linux, networking, web, forensics, and crypto.',
     ],
   },
   {
-    role: 'Fundador y Capitán - Ch0wn3rs (Equipo CTF)',
-    when: 'Jun 2025 - Actualidad',
+    role: 'Founder & Captain - Ch0wn3rs (CTF Team)',
+    when: 'Jun 2025 - Present',
     bullets: [
-      'Coordino estrategia, preparación competitiva y distribución de categorías.',
-      'Participación activa en CTFs internacionales con ranking top de Colombia.',
+      'Coordinate strategy, competition preparation, and category distribution.',
+      'Active participation in international CTFs with top Colombia ranking.',
     ],
   },
   {
-    role: 'Monitor Académico - Seguridad de la Información (UPB)',
+    role: 'Teaching Assistant - Information Security (UPB)',
     when: 'Jun 2025 - Nov 2025',
     bullets: [
-      'Acompañamiento en sesiones prácticas de forense, web, cripto y scripting.',
-      'Guías de documentación técnica: reproducción, evidencia, impacto y recomendación.',
+      'Supported hands-on labs in forensics, web, crypto, and scripting.',
+      'Guided technical documentation with reproduction steps, evidence, impact, and recommendations.',
     ],
   },
   {
-    role: 'Representante Estudiantil - Ingeniería de Sistemas',
-    when: 'Nov 2025 - Actualidad',
+    role: 'Student Representative - Systems Engineering',
+    when: 'Nov 2025 - Present',
     bullets: [
-      'Gestión de feedback estudiantil y seguimiento de incidencias académicas.',
-      'Articulación con coordinación para mejoras del programa.',
+      'Managed student feedback and tracked academic issues.',
+      'Coordinated with faculty leadership to improve the program.',
     ],
   },
   {
-    role: 'Investigador Estudiantil - Frontend y Scrum',
+    role: 'Student Researcher - Frontend & Scrum',
     when: 'Jul 2024 - Feb 2026',
     bullets: [
-      'Coordinación de sprints en Azure DevOps y soporte a documentación.',
-      'Seguimiento de entregables y apoyo en desarrollo Angular.',
+      'Coordinated sprint execution in Azure DevOps and documentation support.',
+      'Tracked deliverables and supported Angular development tasks.',
     ],
   },
 ];
@@ -253,14 +253,14 @@ const structuredData = [
     '@type': 'WebSite',
     name: 'Neyi21 Portfolio',
     url: 'https://neyi.me',
-    inLanguage: 'es',
+    inLanguage: 'en',
   },
 ];
 ---
 
 <BaseLayout
-  title="Joaquin Castaño Trujillo (Neyi21) | Portfolio de Ciberseguridad"
-  description="Portafolio de Joaquin Castaño Trujillo (Neyi21): Ch0wn3rs, writeups, proyectos y mejores resultados en CTFtime."
+  title="Joaquin Castaño Trujillo (Neyi21) | Cybersecurity Portfolio"
+  description="Portfolio of Joaquin Castaño Trujillo (Neyi21): Ch0wn3rs, writeups, projects, and top CTFtime results."
   keywords={seoKeywords}
   canonical="https://neyi.me/"
   image="/images/neyi-pixel.jpg"
@@ -277,13 +277,13 @@ const structuredData = [
       <div class="links" id="site-links">
         <a href="#ranking">CTFs</a>
         <a href="#writeups">Writeups</a>
-        <a href="#proyectos">Proyectos</a>
-        <a href="#experiencia">Experiencia</a>
-        <a href="#contacto">Contacto</a>
+        <a href="#proyectos">Projects</a>
+        <a href="#experiencia">Experience</a>
+        <a href="#contacto">Contact</a>
       </div>
-      <div class="lang-switch" aria-label="Seleccion de idioma">
-        <a class="lang-btn is-active" href="/" aria-current="page">ES</a>
-        <a class="lang-btn" href="/en/">EN</a>
+      <div class="lang-switch" aria-label="Language switch">
+        <a class="lang-btn" href="/">ES</a>
+        <a class="lang-btn is-active" href="/en/" aria-current="page">EN</a>
       </div>
     </nav>
 
@@ -315,7 +315,7 @@ const structuredData = [
               />
               <span class="avatar-scan" aria-hidden="true"></span>
             </div>
-            <p class="avatar-hover-hint">Pasa el mouse</p>
+            <p class="avatar-hover-hint">Hover me</p>
           </div>
           <div class="console-right">
             <h1 class="hero-name-inline hero-name-glitch">
@@ -340,17 +340,17 @@ const structuredData = [
 
     <section class="section" id="ranking">
       <div class="section-head ranking-head">
-        <h2>Mejores resultados en CTFs</h2>
+        <h2>Top CTF Results</h2>
         <span class="ranking-chip">CTFtime Live</span>
       </div>
 
       <div class="stats-grid" id="team-stats" data-team-id="408704">
         <article class="stat-card">
-          <p>Ranking Colombia (<span id="country-year">{team.year}</span>)</p>
+          <p>Colombia Ranking (<span id="country-year">{team.year}</span>)</p>
           <h3 id="country-rank">#{team.countryRank}</h3>
         </article>
         <article class="stat-card">
-          <p>Ranking Global (<span id="global-year">{team.year}</span>)</p>
+          <p>Global Ranking (<span id="global-year">{team.year}</span>)</p>
           <h3 id="global-rank">#{team.globalRank}</h3>
         </article>
         <article class="stat-card">
@@ -367,14 +367,14 @@ const structuredData = [
                 <p class="result-title">{ctf.title}</p>
               </div>
               <div class="result-pill">#{ctf.place}</div>
-              <a href={ctf.ctftimeUrl} target="_blank" rel="noreferrer">Ver evento</a>
+              <a href={ctf.ctftimeUrl} target="_blank" rel="noreferrer">View event</a>
             </article>
           ))
         ) : (
           <article class="result-card">
             <div>
-              <p class="result-title">Cargando mejores resultados desde CTFtime API...</p>
-              <p class="result-date">Si no cargan, revisa tu conexion y recarga.</p>
+              <p class="result-title">Loading top results from CTFtime API...</p>
+              <p class="result-date">If they do not load, check your connection and refresh.</p>
             </div>
           </article>
         )}
@@ -389,7 +389,7 @@ const structuredData = [
         {writeupsGitbooks.map((item, idx) => (
           <a
             class="writeup-entry"
-            href={item.urlEs}
+            href={item.urlEn}
             data-writeup-es={item.urlEs}
             data-writeup-en={item.urlEn}
             target={item.url.startsWith('http') ? '_blank' : undefined}
@@ -408,14 +408,14 @@ const structuredData = [
 
     <section class="section" id="proyectos">
       <div class="section-head">
-        <h2>Proyectos</h2>
+        <h2>Projects</h2>
       </div>
       <div class="cards-grid projects-grid">
         {proyectos.map((project, idx) => (
           <article class={`info-card project-card ${project.upcoming ? 'is-upcoming' : ''}`}>
             <div class="project-status-row">
-              <p class="project-kicker">Proyecto {String(idx + 1).padStart(2, '0')}</p>
-              <span class={`project-state ${project.status.toLowerCase().includes('completado') ? 'is-completed' : ''}`}>{project.status}</span>
+              <p class="project-kicker">Project {String(idx + 1).padStart(2, '0')}</p>
+              <span class={`project-state ${project.status.toLowerCase().includes('completed') ? 'is-completed' : ''}`}>{project.status}</span>
             </div>
             <h3>{project.title}</h3>
             <p>{project.summary}</p>
@@ -423,7 +423,7 @@ const structuredData = [
               {project.upcoming ? (
                 <>
                   <span class="btn-mini is-disabled" aria-disabled="true">GitHub</span>
-                  <span class="btn-mini btn-mini-alt is-disabled" aria-disabled="true">Ver ficha</span>
+                  <span class="btn-mini btn-mini-alt is-disabled" aria-disabled="true">View details</span>
                 </>
               ) : (
                 <>
@@ -437,12 +437,12 @@ const structuredData = [
                     data-project-github={project.github}
                     data-project-demo={project.demo ?? ''}
                   >
-                    Ver ficha
+                    View details
                   </button>
                 </>
               )}
             </div>
-            {project.upcoming && <div class="project-soon-overlay">Proximamente</div>}
+            {project.upcoming && <div class="project-soon-overlay">Coming Soon</div>}
           </article>
         ))}
       </div>
@@ -450,7 +450,7 @@ const structuredData = [
 
     <section class="section" id="experiencia">
       <div class="section-head">
-        <h2>Experiencia</h2>
+        <h2>Experience</h2>
       </div>
       <div class="timeline full-exp">
         {experiencias.map((item) => (
@@ -488,7 +488,7 @@ const structuredData = [
     </section>
 
     <footer class="footer" id="contacto">
-      <h2>Contacto</h2>
+      <h2>Contact</h2>
       <div class="contact-grid">
         {contacts.map((c) => (
           <a class="contact-card" href={c.href} target={c.href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer">
@@ -597,7 +597,7 @@ const structuredData = [
 
       document.querySelectorAll('[data-project-open]').forEach((openBtn) => {
         openBtn.addEventListener('click', () => {
-          const title = openBtn.getAttribute('data-project-title') || 'Proyecto';
+          const title = openBtn.getAttribute('data-project-title') || 'Project';
           const description = openBtn.getAttribute('data-project-description') || '';
           const tags = (openBtn.getAttribute('data-project-tags') || '')
             .split('|')
@@ -831,7 +831,7 @@ const structuredData = [
             link.href = String(ctf?.ctftimeUrl || 'https://ctftime.org/');
             link.target = '_blank';
             link.rel = 'noreferrer';
-            link.textContent = 'Ver evento';
+            link.textContent = 'View event';
 
             article.appendChild(left);
             article.appendChild(place);
