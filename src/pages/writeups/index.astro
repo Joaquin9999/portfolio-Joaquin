@@ -80,6 +80,20 @@ const t = lang === 'en'
     };
 
 const basePath = '/writeups';
+const categoryIconMap: Record<string, string> = {
+  forensics: 'https://cdn.simpleicons.org/wireshark/8fdfff',
+  forense: 'https://cdn.simpleicons.org/wireshark/8fdfff',
+  osint: 'https://cdn.simpleicons.org/nmap/8fdfff',
+  cryptography: 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+  criptografia: 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+  'criptografía': 'https://cdn.simpleicons.org/letsencrypt/8fdfff',
+};
+
+function categoryIcon(tag: string): string {
+  const key = tag.toLowerCase();
+  return categoryIconMap[key] ?? 'https://cdn.simpleicons.org/bookstack/8fdfff';
+}
+
 const langUrl = (targetLang: 'es' | 'en', base?: string) => {
   const u = new URL(basePath, Astro.url.origin);
   u.searchParams.set('lang', targetLang);
@@ -121,7 +135,10 @@ const langUrl = (targetLang: 'es' | 'en', base?: string) => {
               >
                 <span class="writeups-menu-num">{String(idx + 1).padStart(2, '0')}</span>
                 <span>
-                  <small>{item.tag}</small>
+                  <small>
+                    <img src={categoryIcon(item.tag)} alt="" aria-hidden="true" />
+                    {item.tag}
+                  </small>
                   <strong>{item.title}</strong>
                 </span>
               </a>
