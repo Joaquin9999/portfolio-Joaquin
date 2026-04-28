@@ -2262,21 +2262,12 @@ html[lang='en'] .writeup-content pre.is-scrollable::before {
 }
 
 .writeups-menu-link small {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  display: block;
   color: #9eaaca;
   letter-spacing: 0.08em;
   font-size: 0.84rem;
   margin-bottom: 0.12rem;
   text-transform: uppercase;
-}
-
-.writeups-menu-link small img {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-  opacity: 0.95;
 }
 
 .writeups-menu-link strong {
